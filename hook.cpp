@@ -120,7 +120,7 @@ bool g_bDumpItem = false;
 bool g_bDumpCrypt = false;
 bool g_bDumpAll = false;
 bool g_bDisableAuthUI = false;
-bool g_bUseSSL = false;  // Force SSL disabled - never use SSL even with -usessl flag
+bool g_bUseSSL = false;
 bool g_bWriteMetadata = false;
 bool g_bLoadDediCsvFromFile = false;
 bool g_bRegister = false;
@@ -190,8 +190,7 @@ void Pbuf_AddText(const char* text)
 
 CreateHookClass(void*, SocketManagerConstructor, bool useSSL)
 {
-	// FORCE SSL OFF - always pass false to disable SSL handshake
-	return g_pfnSocketManagerConstructor(ptr, false);
+	return g_pfnSocketManagerConstructor(ptr, g_bUseSSL);
 }
 
 CreateHookClass(int, ServerConnect, unsigned long ip, unsigned short port, bool validate)
@@ -1146,29 +1145,12 @@ CreateHookClass(const char*, GetSSLProtocolName)
 
 CreateHookClassType(void*, SocketConstructor, int, int a2, int a3, char a4)
 {
-	// Call original constructor FIRST
-	void* result = g_pfnSocketConstructor(ptr, a2, a3, a4);
-	
-	// Debug: Show what values are at these offsets BEFORE we modify them
-	static bool firstCall = true;
-	if (firstCall) {
-		char buf[256];
-		sprintf(buf, "SocketConstructor hook called!\n\nBEFORE nulling:\n+72: 0x%08X\n+76: 0x%08X\n+80: 0x%08X\n+84: 0x%08X", 
-			*(DWORD*)((int)ptr + 72),
-			*(DWORD*)((int)ptr + 76),
-			*(DWORD*)((int)ptr + 80),
-			*(DWORD*)((int)ptr + 84));
-		MessageBox(NULL, buf, "DEBUG - SSL Context Pointers", MB_OK);
-		firstCall = false;
-	}
-	
-	// THEN disable SSL - set all encryption context pointers to NULL
-	*(DWORD*)((int)ptr + 72) = 0;
-	*(DWORD*)((int)ptr + 76) = 0;
-	*(DWORD*)((int)ptr + 80) = 0;
-	*(DWORD*)((int)ptr + 84) = 0;
+    *(DWORD*)((int)ptr + 72) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
+	*(DWORD*)((int)ptr + 76) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
+	*(DWORD*)((int)ptr + 80) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
+	*(DWORD*)((int)ptr + 84) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
 
-	return result;
+	return g_pfnSocketConstructor(ptr, a2, a3, a4);
 }
 
 CreateHookClass(int, ReadPacket, char* outBuf, int len, unsigned short* outLen, bool initialMsg)
@@ -1409,8 +1391,7 @@ void Init(HMODULE hEngineModule, HMODULE hFileSystemModule)
 	g_bDumpAll = CommandLine()->CheckParm("-dumpall");
 	g_bDumpCrypt = CommandLine()->CheckParm("-dumpcrypt");
 	g_bDisableAuthUI = CommandLine()->CheckParm("-disableauthui");
-	// g_bUseSSL = CommandLine()->CheckParm("-usessl");  // DISABLED - Force SSL off
-	g_bUseSSL = false;  // Always disable SSL
+	g_bUseSSL = CommandLine()->CheckParm("-usessl");
 	g_bWriteMetadata = CommandLine()->CheckParm("-writemetadata");
 	g_bLoadDediCsvFromFile = CommandLine()->CheckParm("-loaddedicsvfromfile");
 	g_bNoNGHook = CommandLine()->CheckParm("-nonghook");
@@ -1657,8 +1638,6 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 
 	if (!g_bUseOriginalServer && !g_bUseSSL)
 	{
-		MessageBox(NULL, "Installing SSL disable hooks (GetSSLProtocolName + SocketConstructor)", "DEBUG", MB_OK);
-		
 		// hook GetSSLProtocolName to make Crypt work
 		find = FindPattern(GETSSLPROTOCOLNAME_SIG_CSNZ, GETSSLPROTOCOLNAME_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
@@ -1666,25 +1645,12 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		else
 			InlineHookFromCallOpcode((void*)find, Hook_GetSSLProtocolName, (void*&)g_pfnGetSSLProtocolName, dummy);
 
-		MessageBox(NULL, "About to search for SocketConstructor pattern...", "DEBUG - Before FindPattern", MB_OK);
-		
 		// hook SocketConstructor to create ctx objects
 		find = FindPattern(SOCKETCONSTRUCTOR_SIG_CSNZ, SOCKETCONSTRUCTOR_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-		
-		MessageBox(NULL, "FindPattern completed!", "DEBUG - After FindPattern", MB_OK);
-		
 		if (!find)
-		{
-			MessageBox(NULL, "SocketConstructor == NULL!!! Pattern not found in hw.dll!", "ERROR - CRITICAL", MB_OK);
-		}
+			MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
 		else
-		{
-			char buf[256];
-			sprintf(buf, "SocketConstructor pattern found at: 0x%08X\nInstalling hook now...", find);
-			MessageBox(NULL, buf, "DEBUG - Pattern Found", MB_OK);
 			InlineHookFromCallOpcode((void*)(find + 10), Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
-			MessageBox(NULL, "SocketConstructor hook installed successfully!", "DEBUG - Hook Installed", MB_OK);
-		}
 
 		find = FindPattern(EVP_CIPHER_CTX_NEW_SIG_CSNZ, EVP_CIPHER_CTX_NEW_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
