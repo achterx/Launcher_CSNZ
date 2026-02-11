@@ -621,11 +621,10 @@ void* __cdecl Hook_GetJSONManager()
 
 		printf("[LoadJson] vtable resolved: LoadJSON @ %p\n", (void*)g_pfnLoadJson);
 
-		// Hook the real LoadJSON now that we have its address
+		// Hook the real LoadJSON now that we have its address.
+		// g_bJsonResolved guards against re-entry so the getter hook
+		// is effectively a no-op from this point on.
 		InlineHook((void*)g_pfnLoadJson, Hook_LoadJson_vtable, (void*&)g_pfnLoadJson);
-
-		// Remove the getter hook — we don't need it anymore
-		FreeHook((void*)ADDR_GetJSONManager);
 	}
 
 	return obj;
