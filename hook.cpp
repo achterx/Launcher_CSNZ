@@ -1146,6 +1146,14 @@ CreateHookClass(const char*, GetSSLProtocolName)
 
 CreateHookClassType(void*, SocketConstructor, int, int a2, int a3, char a4)
 {
+	// Debug: verify this hook is being called
+	static bool firstCall = true;
+	if (firstCall) {
+		MessageBox(NULL, "SocketConstructor hook called! Setting SSL contexts to NULL", "DEBUG", MB_OK);
+		firstCall = false;
+	}
+	
+	// Disable SSL - set all encryption context pointers to NULL
 	*(DWORD*)((int)ptr + 72) = 0;
 	*(DWORD*)((int)ptr + 76) = 0;
 	*(DWORD*)((int)ptr + 80) = 0;
@@ -1640,6 +1648,8 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 
 	if (!g_bUseOriginalServer && !g_bUseSSL)
 	{
+		MessageBox(NULL, "Installing SSL disable hooks (GetSSLProtocolName + SocketConstructor)", "DEBUG", MB_OK);
+		
 		// hook GetSSLProtocolName to make Crypt work
 		find = FindPattern(GETSSLPROTOCOLNAME_SIG_CSNZ, GETSSLPROTOCOLNAME_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
