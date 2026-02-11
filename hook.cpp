@@ -190,7 +190,8 @@ void Pbuf_AddText(const char* text)
 
 CreateHookClass(void*, SocketManagerConstructor, bool useSSL)
 {
-	return g_pfnSocketManagerConstructor(ptr, g_bUseSSL);
+	// FORCE SSL OFF - always pass false to disable SSL handshake
+	return g_pfnSocketManagerConstructor(ptr, false);
 }
 
 CreateHookClass(int, ServerConnect, unsigned long ip, unsigned short port, bool validate)
