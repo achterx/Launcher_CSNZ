@@ -1651,8 +1651,8 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		if (!find)
 			MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
 		else
-			InlineHookFromCallOpcode((void*)(find + 10), Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
-
+InlineHook((void*)find, Hook_SocketConstructor, (void*&)g_pfnSocketConstructor);
+		
 		find = FindPattern(EVP_CIPHER_CTX_NEW_SIG_CSNZ, EVP_CIPHER_CTX_NEW_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
 			MessageBox(NULL, "EVP_CIPHER_CTX_new == NULL!!!", "Error", MB_OK);
