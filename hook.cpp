@@ -1146,20 +1146,29 @@ CreateHookClass(const char*, GetSSLProtocolName)
 
 CreateHookClassType(void*, SocketConstructor, int, int a2, int a3, char a4)
 {
-	// Debug: verify this hook is being called
+	// Call original constructor FIRST
+	void* result = g_pfnSocketConstructor(ptr, a2, a3, a4);
+	
+	// Debug: Show what values are at these offsets BEFORE we modify them
 	static bool firstCall = true;
 	if (firstCall) {
-		MessageBox(NULL, "SocketConstructor hook called! Setting SSL contexts to NULL", "DEBUG", MB_OK);
+		char buf[256];
+		sprintf(buf, "SocketConstructor hook called!\n\nBEFORE nulling:\n+72: 0x%08X\n+76: 0x%08X\n+80: 0x%08X\n+84: 0x%08X", 
+			*(DWORD*)((int)ptr + 72),
+			*(DWORD*)((int)ptr + 76),
+			*(DWORD*)((int)ptr + 80),
+			*(DWORD*)((int)ptr + 84));
+		MessageBox(NULL, buf, "DEBUG - SSL Context Pointers", MB_OK);
 		firstCall = false;
 	}
 	
-	// Disable SSL - set all encryption context pointers to NULL
+	// THEN disable SSL - set all encryption context pointers to NULL
 	*(DWORD*)((int)ptr + 72) = 0;
 	*(DWORD*)((int)ptr + 76) = 0;
 	*(DWORD*)((int)ptr + 80) = 0;
 	*(DWORD*)((int)ptr + 84) = 0;
 
-	return g_pfnSocketConstructor(ptr, a2, a3, a4);
+	return result;
 }
 
 CreateHookClass(int, ReadPacket, char* outBuf, int len, unsigned short* outLen, bool initialMsg)
