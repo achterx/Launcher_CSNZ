@@ -87,11 +87,11 @@ DWORD g_dwFileSystemSize;
 #define CREATESTRINGTABLE_SIG_CSNZ "\x55\x8B\xEC\x53\x56\x8B\xF1\xC7\x46"
 #define CREATESTRINGTABLE_MASK_CSNZ "xxxxxxxxx"
 
-#define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\x00\x00\x00\x00\x53\x56\x8B\x75\x0C\x8B\x01\x57\x8B\x50\x30"
-#define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxxxxxx"
+#define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\x00\x00\x00\x00\x53\x56\x8B\x75\x0C\x8B\x01\x57\x8B\x50\x30\x8B\x45\x08\x83\x78\x14\x10\x72\x02\x8B"
+#define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxxxxxxxxxxxxxx"
 
-#define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\x81\xEC\x98\x02\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\xF8\x8B\x45\x10"
-#define LOGTOERRORLOG_MASK_CSNZ "xxxxxxxxxx????xxxxxxxx"
+#define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\x81\xEC\x98\x02\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\xF8\x8B\x45\x10\x0F\x28\x0D\x00\x00\x00\x00\x53"
+#define LOGTOERRORLOG_MASK_CSNZ "xxxxxxxxxx????xxxxxxxxxxx????x"
 
 #define READPACKET_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF0\x83\xFE\x00\x77"
 #define READPACKET_MASK_CSNZ "x????xxxx?x"
@@ -1145,10 +1145,10 @@ CreateHookClass(const char*, GetSSLProtocolName)
 
 CreateHookClassType(void*, SocketConstructor, int, int a2, int a3, char a4)
 {
-	*(DWORD*)((int)ptr + 72) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
-	*(DWORD*)((int)ptr + 76) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
-	*(DWORD*)((int)ptr + 80) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
-	*(DWORD*)((int)ptr + 84) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
+	*(DWORD*)((int)ptr + 72) = 0;
+	*(DWORD*)((int)ptr + 76) = 0;
+	*(DWORD*)((int)ptr + 80) = 0;
+	*(DWORD*)((int)ptr + 84) = 0;
 
 	return g_pfnSocketConstructor(ptr, a2, a3, a4);
 }
