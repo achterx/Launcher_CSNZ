@@ -99,8 +99,8 @@ DWORD g_dwFileSystemSize;
 #define GETSSLPROTOCOLNAME_SIG_CSNZ "\xE8\x00\x00\x00\x00\xB9\x00\x00\x00\x00\x8A\x10"
 #define GETSSLPROTOCOLNAME_MASK_CSNZ "x????x????xx"
 
-#define SOCKETCONSTRUCTOR_SIG_CSNZ "\xE8\x00\x00\x00\x00\xEB\x00\x33\xC0\x53\xC7\x45"
-#define SOCKETCONSTRUCTOR_MASK_CSNZ "x????x?xxxxx"
+#define SOCKETCONSTRUCTOR_SIG_CSNZ "\x6A\x00\x68\x00\x00\x08\x00\x68\x00\x00\x08\x00\x8B\xC8\xE8"
+#define SOCKETCONSTRUCTOR_MASK_CSNZ "x?x??x?x??x?xxx"
 
 #define EVP_CIPHER_CTX_NEW_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF8\x89\xBE"
 #define EVP_CIPHER_CTX_NEW_MASK_CSNZ "x????xxxx"
