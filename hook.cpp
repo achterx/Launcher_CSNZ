@@ -1648,12 +1648,11 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		// hook SocketConstructor to create ctx objects
 		// DISABLED: Pattern changed in new hw.dll and no longer matches
 		
-		find = FindPattern(SOCKETCONSTRUCTOR_SIG_CSNZ, SOCKETCONSTRUCTOR_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-		if (!find)
-			MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
-		else
-			InlineHookFromCallOpcode((void*)find, Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
-		
+find = FindPattern(SOCKETCONSTRUCTOR_SIG_CSNZ, SOCKETCONSTRUCTOR_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+if (!find)
+    MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
+else
+    InlineHookFromCallOpcode((void*)(find + 9), Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
 
 		find = FindPattern(EVP_CIPHER_CTX_NEW_SIG_CSNZ, EVP_CIPHER_CTX_NEW_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
