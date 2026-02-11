@@ -87,8 +87,13 @@ DWORD g_dwFileSystemSize;
 #define CREATESTRINGTABLE_SIG_CSNZ "\x55\x8B\xEC\x53\x56\x8B\xF1\xC7\x46"
 #define CREATESTRINGTABLE_MASK_CSNZ "xxxxxxxxx"
 
-#define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\x00\x00\x00\x00\x53\x56\x8B\x75\x00\x8B\x01\x57\x8B\x50\x00\x8B\x45\x00\x83\x78\x00\x00\x76\x00\x8B\x00\x6A\x00\x68\x00\x00\x00\x00\x50\xFF\xD2\x8B\x0D\x00\x00\x00\x00\x8B\xD8\x53\x8B\x11\xFF\x52\x00\x8B\xF8\x85\xFF\x74"
-#define LOADJSON_MASK_CSNZ "xxxxx????xxxx?xxxxx?xx?xx??x?xxx?x????xxxxx????xxxxxxx?xxxxx"
+// ── vtable-based LoadJSON resolution ─────────────────────────────────────────
+// sub_2487F80 is the JSON manager singleton getter: void* GetJSONManager()
+// LoadJSON lives at vtable offset +0x4D0 (index 308), signature:
+//   void __thiscall LoadJSON(void* this, void** filename, void** buffer)
+#define ADDR_GetJSONManager     0x2487F80
+#define VTABLE_IDX_LOADJSON     (0x4D0 / 4)   // 308
+#define VTABLE_IDX_FILEEXISTS   (0x4CC / 4)   // 307
 
 #define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x57\x8B\x7D\x00\x8D\x45\x00\x50\x6A"
 #define LOGTOERRORLOG_MASK_CSNZ "xxxxx????x????xxxx?xxxx?xx?xx"
@@ -492,45 +497,138 @@ SetBuffer:
 	return 1;
 }
 
-CreateHook(__stdcall, int, LoadJson, std::string* filename, std::string* buffer)
+// ── vtable LoadJSON hook ──────────────────────────────────────────────────────
+// Real game signature: void __thiscall LoadJSON(void* this, void** filename, void** buffer)
+// The internal string layout: ptr[0] = char* data, ptr[1] = size (SSO: inline if size < 16)
+//
+// We expose a std::string view of the internal string for the existing LoadJson() helper.
+
+typedef void (__thiscall* tLoadJson_vtable)(void* thisptr, void** filename, void** buffer);
+typedef void* (__cdecl*   tGetJSONManager)();
+
+tLoadJson_vtable  g_pfnLoadJson        = nullptr;  // original vtable LoadJSON
+tGetJSONManager   g_pfnGetJSONManager  = nullptr;  // original GetJSONManager getter
+static bool       g_bJsonResolved      = false;
+
+// Helper: read an internal game string (void**) as a std::string
+static std::string GameStringToStd(void** gs)
 {
-	if (dediCsv.find(*filename) != dediCsv.end())
+	if (!gs) return {};
+	// Internal string: if capacity < 16 the chars are inline at gs[0..3],
+	// otherwise gs[0] is a heap pointer. Size is always at gs[1] as a DWORD.
+	DWORD size = (DWORD)gs[1];
+	if (!size) return {};
+	const char* data;
+	DWORD cap = (DWORD)gs[2]; // capacity slot (varies by impl, safe to read)
+	// SSO threshold used by this game's MSVC runtime is 15 chars
+	if (cap < 16)
+		data = reinterpret_cast<const char*>(gs); // inline buffer
+	else
+		data = reinterpret_cast<const char*>(gs[0]); // heap pointer
+	if (!data) return {};
+	return std::string(data, size);
+}
+
+// The actual hook — called instead of the game's vtable LoadJSON
+void __fastcall Hook_LoadJson_vtable(void* thisptr, void* /*edx*/, void** filename, void** buffer)
+{
+	std::string filenameStr = GameStringToStd(filename);
+
+	if (!filenameStr.empty() && dediCsv.find(filenameStr) != dediCsv.end())
 	{
-		switch (dediCsv[*filename])
+		// Re-use the existing LoadJson() helper that writes into a std::string buffer.
+		// We need to write back into the game's internal string; the easiest safe way
+		// is to call the original first (to size the buffer), then overwrite it.
+		// Instead we build a temporary std::string and copy its bytes in.
+		std::string tmpBuf;
+
+		bool handled = false;
+		switch (dediCsv[filenameStr])
 		{
-		case ZombieSkillProperty_Crazy: return LoadJson(filename, buffer, g_ZombieSkillProperty_Crazy, sizeof(g_ZombieSkillProperty_Crazy));
-		case ZombieSkillProperty_JumpBuff: return LoadJson(filename, buffer, g_ZombieSkillProperty_JumpBuff, sizeof(g_ZombieSkillProperty_JumpBuff));
-		case ZombieSkillProperty_ArmorUp: return LoadJson(filename, buffer, g_ZombieSkillProperty_ArmorUp, sizeof(g_ZombieSkillProperty_ArmorUp));
-		case ZombieSkillProperty_Heal: return LoadJson(filename, buffer, g_ZombieSkillProperty_Heal, sizeof(g_ZombieSkillProperty_Heal));
-		case ZombieSkillProperty_ShieldBuf: return LoadJson(filename, buffer, g_ZombieSkillProperty_ShieldBuf, sizeof(g_ZombieSkillProperty_ShieldBuf));
-		case ZombieSkillProperty_Cloacking: return LoadJson(filename, buffer, g_ZombieSkillProperty_Cloacking, sizeof(g_ZombieSkillProperty_Cloacking));
-		case ZombieSkillProperty_Trap: return LoadJson(filename, buffer, g_ZombieSkillProperty_Trap, sizeof(g_ZombieSkillProperty_Trap));
-		case ZombieSkillProperty_Smoke: return LoadJson(filename, buffer, g_ZombieSkillProperty_Smoke, sizeof(g_ZombieSkillProperty_Smoke));
-		case ZombieSkillProperty_VoodooHeal: return LoadJson(filename, buffer, g_ZombieSkillProperty_VoodooHeal, sizeof(g_ZombieSkillProperty_VoodooHeal));
-		case ZombieSkillProperty_Shock: return LoadJson(filename, buffer, g_ZombieSkillProperty_Shock, sizeof(g_ZombieSkillProperty_Shock));
-		case ZombieSkillProperty_Rush: return LoadJson(filename, buffer, g_ZombieSkillProperty_Rush, sizeof(g_ZombieSkillProperty_Rush));
-		case ZombieSkillProperty_Pile: return LoadJson(filename, buffer, g_ZombieSkillProperty_Pile, sizeof(g_ZombieSkillProperty_Pile));
-		case ZombieSkillProperty_Bat: return LoadJson(filename, buffer, g_ZombieSkillProperty_Bat, sizeof(g_ZombieSkillProperty_Bat));
-		case ZombieSkillProperty_Stiffen: return LoadJson(filename, buffer, g_ZombieSkillProperty_Stiffen, sizeof(g_ZombieSkillProperty_Stiffen));
-		case ZombieSkillProperty_SelfDestruct: return LoadJson(filename, buffer, g_ZombieSkillProperty_SelfDestruct, sizeof(g_ZombieSkillProperty_SelfDestruct));
-		case ZombieSkillProperty_Penetration: return LoadJson(filename, buffer, g_ZombieSkillProperty_Penetration, sizeof(g_ZombieSkillProperty_Penetration));
-		case ZombieSkillProperty_Revival: return LoadJson(filename, buffer, g_ZombieSkillProperty_Revival, sizeof(g_ZombieSkillProperty_Revival));
-		case ZombieSkillProperty_Telleport: return LoadJson(filename, buffer, g_ZombieSkillProperty_Telleport, sizeof(g_ZombieSkillProperty_Telleport));
-		case ZombieSkillProperty_Boost: return LoadJson(filename, buffer, g_ZombieSkillProperty_Boost, sizeof(g_ZombieSkillProperty_Boost));
-		case ZombieSkillProperty_BombCreate: return LoadJson(filename, buffer, g_ZombieSkillProperty_BombCreate, sizeof(g_ZombieSkillProperty_BombCreate));
-		case ZombieSkillProperty_Flying: return LoadJson(filename, buffer, g_ZombieSkillProperty_Flying, sizeof(g_ZombieSkillProperty_Flying));
-		case ZombieSkillProperty_Fireball: return LoadJson(filename, buffer, g_ZombieSkillProperty_Fireball, sizeof(g_ZombieSkillProperty_Fireball));
-		case ZombieSkillProperty_DogShoot: return LoadJson(filename, buffer, g_ZombieSkillProperty_DogShoot, sizeof(g_ZombieSkillProperty_DogShoot));
-		case ZombieSkillProperty_ViolentRush: return LoadJson(filename, buffer, g_ZombieSkillProperty_ViolentRush, sizeof(g_ZombieSkillProperty_ViolentRush));
-		case ZombieSkillProperty_WebShooter: return LoadJson(filename, buffer, g_ZombieSkillProperty_WebShooter, sizeof(g_ZombieSkillProperty_WebShooter));
-		case ZombieSkillProperty_WebBomb: return LoadJson(filename, buffer, g_ZombieSkillProperty_WebBomb, sizeof(g_ZombieSkillProperty_WebBomb));
-		case ZombieSkillProperty_Protect: return LoadJson(filename, buffer, g_ZombieSkillProperty_Protect, sizeof(g_ZombieSkillProperty_Protect));
-		case ZombieSkillProperty_ChargeSlash: return LoadJson(filename, buffer, g_ZombieSkillProperty_ChargeSlash, sizeof(g_ZombieSkillProperty_ChargeSlash));
-		case ZombieSkillProperty_Claw: return LoadJson(filename, buffer, g_ZombieSkillProperty_Claw, sizeof(g_ZombieSkillProperty_Claw));
+		case ZombieSkillProperty_Crazy:      handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Crazy,      sizeof(g_ZombieSkillProperty_Crazy));      break;
+		case ZombieSkillProperty_JumpBuff:   handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_JumpBuff,   sizeof(g_ZombieSkillProperty_JumpBuff));   break;
+		case ZombieSkillProperty_ArmorUp:    handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_ArmorUp,    sizeof(g_ZombieSkillProperty_ArmorUp));    break;
+		case ZombieSkillProperty_Heal:       handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Heal,       sizeof(g_ZombieSkillProperty_Heal));       break;
+		case ZombieSkillProperty_ShieldBuf:  handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_ShieldBuf,  sizeof(g_ZombieSkillProperty_ShieldBuf));  break;
+		case ZombieSkillProperty_Cloacking:  handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Cloacking,  sizeof(g_ZombieSkillProperty_Cloacking));  break;
+		case ZombieSkillProperty_Trap:       handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Trap,       sizeof(g_ZombieSkillProperty_Trap));       break;
+		case ZombieSkillProperty_Smoke:      handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Smoke,      sizeof(g_ZombieSkillProperty_Smoke));      break;
+		case ZombieSkillProperty_VoodooHeal: handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_VoodooHeal, sizeof(g_ZombieSkillProperty_VoodooHeal)); break;
+		case ZombieSkillProperty_Shock:      handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Shock,      sizeof(g_ZombieSkillProperty_Shock));      break;
+		case ZombieSkillProperty_Rush:       handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Rush,       sizeof(g_ZombieSkillProperty_Rush));       break;
+		case ZombieSkillProperty_Pile:       handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Pile,       sizeof(g_ZombieSkillProperty_Pile));       break;
+		case ZombieSkillProperty_Bat:        handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Bat,        sizeof(g_ZombieSkillProperty_Bat));        break;
+		case ZombieSkillProperty_Stiffen:    handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Stiffen,    sizeof(g_ZombieSkillProperty_Stiffen));    break;
+		case ZombieSkillProperty_SelfDestruct: handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_SelfDestruct, sizeof(g_ZombieSkillProperty_SelfDestruct)); break;
+		case ZombieSkillProperty_Penetration: handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Penetration, sizeof(g_ZombieSkillProperty_Penetration)); break;
+		case ZombieSkillProperty_Revival:    handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Revival,    sizeof(g_ZombieSkillProperty_Revival));    break;
+		case ZombieSkillProperty_Telleport:  handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Telleport,  sizeof(g_ZombieSkillProperty_Telleport));  break;
+		case ZombieSkillProperty_Boost:      handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Boost,      sizeof(g_ZombieSkillProperty_Boost));      break;
+		case ZombieSkillProperty_BombCreate: handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_BombCreate, sizeof(g_ZombieSkillProperty_BombCreate)); break;
+		case ZombieSkillProperty_Flying:     handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Flying,     sizeof(g_ZombieSkillProperty_Flying));     break;
+		case ZombieSkillProperty_Fireball:   handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Fireball,   sizeof(g_ZombieSkillProperty_Fireball));   break;
+		case ZombieSkillProperty_DogShoot:   handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_DogShoot,   sizeof(g_ZombieSkillProperty_DogShoot));   break;
+		case ZombieSkillProperty_ViolentRush: handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_ViolentRush, sizeof(g_ZombieSkillProperty_ViolentRush)); break;
+		case ZombieSkillProperty_WebShooter: handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_WebShooter, sizeof(g_ZombieSkillProperty_WebShooter)); break;
+		case ZombieSkillProperty_WebBomb:    handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_WebBomb,    sizeof(g_ZombieSkillProperty_WebBomb));    break;
+		case ZombieSkillProperty_Protect:    handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Protect,    sizeof(g_ZombieSkillProperty_Protect));    break;
+		case ZombieSkillProperty_ChargeSlash: handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_ChargeSlash, sizeof(g_ZombieSkillProperty_ChargeSlash)); break;
+		case ZombieSkillProperty_Claw:       handled = LoadJson(&filenameStr, &tmpBuf, g_ZombieSkillProperty_Claw,       sizeof(g_ZombieSkillProperty_Claw));       break;
+		}
+
+		if (handled)
+		{
+			// Write tmpBuf contents into the game's internal buffer string.
+			// We do this by calling the original with the real args first to
+			// allocate/size the internal buffer, then overwrite with our data.
+			g_pfnLoadJson(thisptr, filename, buffer);
+
+			// buffer[0] = char* ptr (heap if cap>=16, else inline)
+			// buffer[1] = size, buffer[2] = capacity
+			DWORD cap = (DWORD)buffer[2];
+			char* dst;
+			if (cap < 16)
+				dst = reinterpret_cast<char*>(buffer);
+			else
+				dst = reinterpret_cast<char*>(buffer[0]);
+
+			if (dst)
+			{
+				DWORD newSize = (DWORD)tmpBuf.size();
+				memcpy(dst, tmpBuf.data(), newSize);
+				dst[newSize] = '\0';
+				buffer[1] = (void*)(DWORD_PTR)newSize;
+			}
+			return;
 		}
 	}
 
-	return g_pfnLoadJson(filename, buffer);
+	// Not one of ours — call original
+	g_pfnLoadJson(thisptr, filename, buffer);
+}
+
+// ── GetJSONManager hook — resolves vtable once, then self-removes ─────────────
+void* __cdecl Hook_GetJSONManager()
+{
+	void* obj = g_pfnGetJSONManager();
+
+	if (obj && !g_bJsonResolved)
+	{
+		g_bJsonResolved = true;
+
+		void** vtable       = *reinterpret_cast<void***>(obj);
+		g_pfnLoadJson       = reinterpret_cast<tLoadJson_vtable>(vtable[VTABLE_IDX_LOADJSON]);
+
+		printf("[LoadJson] vtable resolved: LoadJSON @ %p\n", (void*)g_pfnLoadJson);
+
+		// Hook the real LoadJSON now that we have its address
+		InlineHook((void*)g_pfnLoadJson, Hook_LoadJson_vtable, (void*&)g_pfnLoadJson);
+
+		// Remove the getter hook — we don't need it anymore
+		FreeHook((void*)ADDR_GetJSONManager);
+	}
+
+	return obj;
 }
 
 enum metaDataType
@@ -1530,11 +1628,10 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 				g_pfnParseCSV = (tParseCSV)(parseCsvCallAddr + 4 + *(DWORD*)parseCsvCallAddr);
 			}
 
-			find = FindPattern(LOADJSON_SIG_CSNZ, LOADJSON_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-			if (!find)
-				MessageBox(NULL, "LoadJson == NULL!!!", "Error", MB_OK);
-			else
-				InlineHook((void*)find, Hook_LoadJson, (void*&)g_pfnLoadJson);
+			// Hook the JSON manager singleton getter (sub_2487F80 @ 0x2487F80).
+			// The first time anything calls it we resolve the vtable, hook the real
+			// LoadJSON (vtable offset +0x4D0), and self-remove this getter hook.
+			InlineHook((void*)ADDR_GetJSONManager, Hook_GetJSONManager, (void*&)g_pfnGetJSONManager);
 		}
 	}
 
