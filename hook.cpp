@@ -1145,7 +1145,8 @@ CreateHookClass(const char*, GetSSLProtocolName)
 
 CreateHookClassType(void*, SocketConstructor, int, int a2, int a3, char a4)
 {
-    *(DWORD*)((int)ptr + 72) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
+     MessageBox(NULL, "you foken stupid!", "Debug", MB_OK); // Did you see this?
+	*(DWORD*)((int)ptr + 72) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
 	*(DWORD*)((int)ptr + 76) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
 	*(DWORD*)((int)ptr + 80) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
 	*(DWORD*)((int)ptr + 84) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
