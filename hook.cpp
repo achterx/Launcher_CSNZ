@@ -99,8 +99,8 @@ DWORD g_dwFileSystemSize;
 #define GETSSLPROTOCOLNAME_SIG_CSNZ "\xE8\x00\x00\x00\x00\xB9\x00\x00\x00\x00\x8A\x10"
 #define GETSSLPROTOCOLNAME_MASK_CSNZ "x????x????xx"
 
-#define SOCKETCONSTRUCTOR_SIG_CSNZ "\xE8\x00\x00\x00\x00\xEB\x00\x33\xC0\x53\xC7\x45"
-#define SOCKETCONSTRUCTOR_MASK_CSNZ "x????x?xxxxx"
+#define SOCKETCONSTRUCTOR_SIG_CSNZ "\xA0\x00\x00\x00\x85\xC0\x74\x2C\x50\xE8\x00\x00\x00\x00\x83\xC4\x04\x89\x46\x18\xE8\x00\x00\x00\x00\x89\x46\x48\xE8\x00\x00\x00\x00\x89\x46"
+#define SOCKETCONSTRUCTOR_MASK_CSNZ "x???xxxxxx????xxxxxxx????xxxx????xx"
 
 #define EVP_CIPHER_CTX_NEW_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF8\x89\xBE"
 #define EVP_CIPHER_CTX_NEW_MASK_CSNZ "x????xxxx"
@@ -1647,13 +1647,13 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 
 		// hook SocketConstructor to create ctx objects
 		// DISABLED: Pattern changed in new hw.dll and no longer matches
-		/*
+		
 		find = FindPattern(SOCKETCONSTRUCTOR_SIG_CSNZ, SOCKETCONSTRUCTOR_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
 			MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
 		else
 			InlineHookFromCallOpcode((void*)find, Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
-		*/
+		
 
 		find = FindPattern(EVP_CIPHER_CTX_NEW_SIG_CSNZ, EVP_CIPHER_CTX_NEW_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
