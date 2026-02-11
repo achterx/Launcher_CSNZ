@@ -1666,12 +1666,25 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		else
 			InlineHookFromCallOpcode((void*)find, Hook_GetSSLProtocolName, (void*&)g_pfnGetSSLProtocolName, dummy);
 
+		MessageBox(NULL, "About to search for SocketConstructor pattern...", "DEBUG - Before FindPattern", MB_OK);
+		
 		// hook SocketConstructor to create ctx objects
 		find = FindPattern(SOCKETCONSTRUCTOR_SIG_CSNZ, SOCKETCONSTRUCTOR_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+		
+		MessageBox(NULL, "FindPattern completed!", "DEBUG - After FindPattern", MB_OK);
+		
 		if (!find)
-			MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
+		{
+			MessageBox(NULL, "SocketConstructor == NULL!!! Pattern not found in hw.dll!", "ERROR - CRITICAL", MB_OK);
+		}
 		else
+		{
+			char buf[256];
+			sprintf(buf, "SocketConstructor pattern found at: 0x%08X\nInstalling hook now...", find);
+			MessageBox(NULL, buf, "DEBUG - Pattern Found", MB_OK);
 			InlineHookFromCallOpcode((void*)(find + 10), Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
+			MessageBox(NULL, "SocketConstructor hook installed successfully!", "DEBUG - Hook Installed", MB_OK);
+		}
 
 		find = FindPattern(EVP_CIPHER_CTX_NEW_SIG_CSNZ, EVP_CIPHER_CTX_NEW_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
