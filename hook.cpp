@@ -87,8 +87,8 @@ DWORD g_dwFileSystemSize;
 #define CREATESTRINGTABLE_SIG_CSNZ "\x55\x8B\xEC\x53\x56\x8B\xF1\xC7\x46"
 #define CREATESTRINGTABLE_MASK_CSNZ "xxxxxxxxx"
 
-#define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\x00\x00\x00\x00\x85\xC9\x74\x1D\xF3\x0F\x10\x45\x10\x00\x00\x00\xF3\x0F\x11\x04\x24\xFF\x75\x0C\xFF\x50\x3C\x85\xC0\x74\x06\x5D\xE9\xB6\x64\x07\x00\x5D\xC3\xCC\xCC\xCC\xCC\x55\x8B"
-#define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxx???xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+#define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\x00\x00\x00\x00\x53\x56\x8B\x75\x0C\x8B\x01\x57\x8B\x50\x30\x8B\x45\x08\x83\x78\x14\x10\x72\x02\x8B"
+#define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxxxxxxxxxxxxxx"
 
 #define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\x81\xEC\x98\x02\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\xF8\x8B\x45\x10\x0F\x28\x0D\x00\x00\x00\x00\x53"
 #define LOGTOERRORLOG_MASK_CSNZ "xxxxxxxxxx????xxxxxxxxxxx????x"
@@ -99,8 +99,8 @@ DWORD g_dwFileSystemSize;
 #define GETSSLPROTOCOLNAME_SIG_CSNZ "\xE8\x00\x00\x00\x00\xB9\x00\x00\x00\x00\x8A\x10"
 #define GETSSLPROTOCOLNAME_MASK_CSNZ "x????x????xx"
 
-#define SOCKETCONSTRUCTOR_SIG_CSNZ "\xA0\x00\x00\x00\x85\xC0\x74\x2C\x50\xE8\x00\x00\x00\x00\x83\xC4\x04\x89\x46\x18\xE8\x00\x00\x00\x00\x89\x46\x48\xE8\x00\x00\x00\x00\x89\x46"
-#define SOCKETCONSTRUCTOR_MASK_CSNZ "x???xxxxxx????xxxxxxx????xxxx????xx"
+#define SOCKETCONSTRUCTOR_SIG_CSNZ "\xC6\x45\xFC\x0C\x85\xC0\x74\x09\x8B\xC8\xE8\x00\x00\x00\x00\xEB\x02\x33\xC0\x53\x8B\xC8"
+#define SOCKETCONSTRUCTOR_MASK_CSNZ "xxxxxxxxxx????xxxxxxxx"
 
 #define EVP_CIPHER_CTX_NEW_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF8\x89\xBE"
 #define EVP_CIPHER_CTX_NEW_MASK_CSNZ "x????xxxx"
@@ -1646,13 +1646,11 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 			InlineHookFromCallOpcode((void*)find, Hook_GetSSLProtocolName, (void*&)g_pfnGetSSLProtocolName, dummy);
 
 		// hook SocketConstructor to create ctx objects
-		// DISABLED: Pattern changed in new hw.dll and no longer matches
-		
-find = FindPattern(SOCKETCONSTRUCTOR_SIG_CSNZ, SOCKETCONSTRUCTOR_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-if (!find)
-    MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
-else
-    InlineHookFromCallOpcode((void*)(find + 9), Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
+		find = FindPattern(SOCKETCONSTRUCTOR_SIG_CSNZ, SOCKETCONSTRUCTOR_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+		if (!find)
+			MessageBox(NULL, "SocketConstructor == NULL!!!", "Error", MB_OK);
+		else
+			InlineHookFromCallOpcode((void*)(find + 10), Hook_SocketConstructor, (void*&)g_pfnSocketConstructor, dummy);
 
 		find = FindPattern(EVP_CIPHER_CTX_NEW_SIG_CSNZ, EVP_CIPHER_CTX_NEW_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
 		if (!find)
