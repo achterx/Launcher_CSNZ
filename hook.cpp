@@ -1142,16 +1142,15 @@ CreateHookClass(const char*, GetSSLProtocolName)
 {
 	return "None";
 }
-
 CreateHookClassType(void*, SocketConstructor, int, int a2, int a3, char a4)
 {
-	// Did you see this?
-	*(DWORD*)((int)ptr + 72) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
-	*(DWORD*)((int)ptr + 76) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
-	*(DWORD*)((int)ptr + 80) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
-	*(DWORD*)((int)ptr + 84) = (DWORD)g_pfnEVP_CIPHER_CTX_new();
+    // SSL DISABLED - Set encryption contexts to NULL
+    *(DWORD*)((int)ptr + 72) = 0;  // ✅ NULL = no encryption
+    *(DWORD*)((int)ptr + 76) = 0;  // ✅ NULL = no encryption
+    *(DWORD*)((int)ptr + 80) = 0;  // ✅ NULL = no encryption
+    *(DWORD*)((int)ptr + 84) = 0;  // ✅ NULL = no encryption
 
-	return g_pfnSocketConstructor(ptr, a2, a3, a4);
+    return g_pfnSocketConstructor(ptr, a2, a3, a4);
 }
 
 CreateHookClass(int, ReadPacket, char* outBuf, int len, unsigned short* outLen, bool initialMsg)
