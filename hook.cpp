@@ -33,8 +33,8 @@ DWORD g_dwFileSystemSize;
 #define DEFAULT_IP "127.0.0.1"
 #define DEFAULT_PORT "30002"
 
-#define SOCKETMANAGER_SIG_CSNZ23 "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x51\x53\x56\x57\xA1\x00\x00\x00\x00\x33\xC5\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xD9\x89\x5D\x00\x8A\x45"
-#define SOCKETMANAGER_MASK_CSNZ23 "xxxx?x????xx????xxxxxx????xxxxx?xx????xxxx?xx"
+#define SOCKETMANAGER_SIG_CSNZ23 "\x55\x8B\xEC\x6A\xFF\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x83\xEC\x4C\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\xF0\x53\x56\x57\x50\x8D\x00\x00\x00\x00\x00\x00\x00\x00\x00\xD9\x8A\x45\x08\x88"
+#define SOCKETMANAGER_MASK_CSNZ23 "xxxxxx????xx????xxxxx????xxxxxxxxxx?????????xxxxx"
 
 #define SERVERCONNECT_SIG_CSNZ2019 "\xE8\x00\x00\x00\x00\x85\xC0\x75\x00\x46"
 #define SERVERCONNECT_MASK_CSNZ2019 "x????xxx?x"
@@ -88,10 +88,10 @@ DWORD g_dwFileSystemSize;
 #define CREATESTRINGTABLE_MASK_CSNZ "xxxxxxxxx"
 
 #define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\x00\x00\x00\x00\x53\x56\x8B\x75\x0C\x8B\x01\x57\x8B\x50\x30"
-#define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxxxx"
+#define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxxxxxx"
 
-#define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\x81\xEC\x04\x04\x00\x00\xA1\x94\x9A\xC5\x02\x33\xC5\x89\x45\xFC\x53\x56\x8B\x75\x08\x8D\x45\x10\x57\x50"
-#define LOGTOERRORLOG_MASK_CSNZ "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+#define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\x81\xEC\x98\x02\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\xF8\x8B\x45\x10"
+#define LOGTOERRORLOG_MASK_CSNZ "xxxxxxxxxx????xxxxxxxx"
 
 #define READPACKET_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF0\x83\xFE\x00\x77"
 #define READPACKET_MASK_CSNZ "x????xxxx?x"
@@ -100,7 +100,7 @@ DWORD g_dwFileSystemSize;
 #define GETSSLPROTOCOLNAME_MASK_CSNZ "x????x????xx"
 
 #define SOCKETCONSTRUCTOR_SIG_CSNZ "\xC6\x45\xFC\x0C\x85\xC0\x74\x09\x8B\xC8\xE8\x00\x00\x00\x00\xEB\x02\x33\xC0\x53\x8B\xC8"
-#define SOCKETCONSTRUCTOR_MASK_CSNZ "xxxxxxxxxxx????xxxxxxxx"
+#define SOCKETCONSTRUCTOR_MASK_CSNZ "xxxxxxxxxx????xxxxxxxx"
 
 #define EVP_CIPHER_CTX_NEW_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF8\x89\xBE"
 #define EVP_CIPHER_CTX_NEW_MASK_CSNZ "x????xxxx"
