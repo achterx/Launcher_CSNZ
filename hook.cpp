@@ -42,6 +42,9 @@ DWORD g_dwFileSystemSize;
 #define PACKET_METADATA_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x57\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xF1\x89\xB5\x00\x00\x00\x00\x8B\x45\x00\x89\x85"
 #define PACKET_METADATA_PARSE_MASK_CSNZ "xxxx?x????xx????xxx????x????xxxx?xxxxx?xx????xxxx????xx?xx"
 
+#define PACKET_LOGIN_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x53\x56\x57\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xD9"
+#define PACKET_LOGIN_PARSE_MASK_CSNZ "xxxx?x????xx????xxx????x????xxxx?xxxxxx?xx????xx"
+
 #define PACKET_QUEST_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x83\xEC\x00\x53\x56\x57\xA1\x00\x00\x00\x00\x33\xC5\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xF9\x8B\x45\x00\x89\x45\x00\x8B\x45\x00\xC7\x45\x00\x00\x00\x00\x00\xC7\x45\x00\x00\x00\x00\x00\x89\x45\x00\x6A\x00\x8D\x45\x00\xC7\x45\x00\x00\x00\x00\x00\x50\x8D\x4D\x00\xE8\x00\x00\x00\x00\x0F\xB6\x45\x00\x89\x47\x00\xE8\x00\x00\x00\x00\x8B\x47\x00\x48"
 #define PACKET_QUEST_PARSE_MASK_CSNZ "xxxx?x????xx????xxx?xxxx????xxxxx?xx????xxxx?xx?xx?xx?????xx?????xx?x?xx?xx?????xxx?x????xxx?xx?x????xx?x"
 
@@ -125,6 +128,7 @@ bool g_bWriteMetadata = false;
 bool g_bLoadDediCsvFromFile = false;
 bool g_bRegister = false;
 bool g_bNoNGHook = false;
+bool g_bDumpLogin = false;
 
 cl_enginefunc_t* g_pEngine;
 
@@ -987,6 +991,34 @@ void Metadata_RequestAll()
 	}
 }
 
+CreateHookClass(int, Packet_Login_Parse, void* packetBuffer, int packetSize)
+{
+	printf("\n========================================\n");
+	printf("[Packet_Login_Parse] CALLED - Size: %d\n", packetSize);
+	printf("========================================\n");
+	
+	if (g_bDumpLogin)
+	{
+		DumpPacket("LoginDump", packetBuffer, packetSize);
+	}
+	
+	// Dump first 64 bytes for analysis
+	printf("[Packet_Login_Parse] First 64 bytes:\n");
+	unsigned char* buf = (unsigned char*)packetBuffer;
+	for (int i = 0; i < min(64, packetSize); i++)
+	{
+		printf("%02X ", buf[i]);
+		if ((i + 1) % 16 == 0) printf("\n");
+	}
+	printf("\n========================================\n\n");
+	
+	int result = g_pfnPacket_Login_Parse(ptr, packetBuffer, packetSize);
+	
+	printf("[Packet_Login_Parse] Original handler returned: %d\n", result);
+	
+	return result;
+}
+
 int counter = 0;
 void DumpPacket(const char* packetName, void* packetBuffer, int packetSize)
 {
@@ -1468,6 +1500,7 @@ void Init(HMODULE hEngineModule, HMODULE hFileSystemModule)
 	g_bWriteMetadata = CommandLine()->CheckParm("-writemetadata");
 	g_bLoadDediCsvFromFile = CommandLine()->CheckParm("-loaddedicsvfromfile");
 	g_bNoNGHook = CommandLine()->CheckParm("-nonghook");
+	g_bDumpLogin = CommandLine()->CheckParm("-dumplogin");
 
 	printf("g_pServerIP = %s, g_pServerPort = %s\n", g_pServerIP, g_pServerPort);
 }
@@ -1681,6 +1714,14 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		else
 			InlineHook((void*)find, Hook_Packet_Crypt_Parse, (void*&)g_pfnPacket_Crypt_Parse);
 	}
+
+	
+	// Hook login packet (ID 67) to diagnose login flow issues
+	find = FindPattern(PACKET_LOGIN_PARSE_SIG_CSNZ, PACKET_LOGIN_PARSE_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+	if (!find)
+		MessageBox(NULL, "Packet_Login_Parse == NULL!!!", "Error", MB_OK);
+	else
+		InlineHook((void*)find, Hook_Packet_Login_Parse, (void*&)g_pfnPacket_Login_Parse);
 
 	// Always hook ReadPacket for diagnostics - file dumping is gated by g_bDumpAll inside the hook
 	find = FindPattern(READPACKET_SIG_CSNZ, READPACKET_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
