@@ -93,11 +93,8 @@ DWORD g_dwFileSystemSize;
 #define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\xB8\xB4\xFC\x02\x53\x56\x8B\x75\x0C\x8B\x01\x57\x8B\x50\x30"
 #define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxxxx"
 
-#define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\xB8\x24\x10\x00\x00\xE8\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\xFC\x56"
-#define LOGTOERRORLOG_MASK_CSNZ "xxxxxx??x????x????xxxxxx"
-
-#define LOGTOERRORLOG_SIG_CSNZ_NOV2024 "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF8\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24"
-#define LOGTOERRORLOG_MASK_CSNZ_NOV2024 "xxxxxxxxxxxxxxxxxxx????x????????"
+#define LOGTOERRORLOG_SIG_CSNZ "\x53\x8B\xDC\x83\xEC\x00\x83\xE4\x00\x83\xC4\x00\x55\x8B\x6B\x00\x89\x6C\x24\x00\x8B\xEC\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x8B\x73\x00\x8D\x43"
+#define LOGTOERRORLOG_MASK_CSNZ "xxxxx?xx?xx?xxx?xxx?xxxx????x????xxxx?xxx?xx"
 
 #define READPACKET_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF0\x83\xFE\x00\x77"
 #define READPACKET_MASK_CSNZ "x????xxxx?x"
@@ -1315,47 +1312,24 @@ CreateHookClass(int, ReadPacket, char* outBuf, int len, unsigned short* outLen, 
 	return result;
 }
 
-CreateHook(__cdecl, void, LogToErrorLog, char* pLogFile, int logFileId, char* fmt, int fmtLen, ...)
-{
-	char outputString[1024];
-
-	va_list va;
-	va_start(va, fmtLen);
-	_vsnprintf_s(outputString, sizeof(outputString), fmt, va);
-	outputString[1023] = 0;
-	va_end(va);
-
-	printf("[LogToErrorLog][%s.log] %s\n", pLogFile, outputString);
-
-	g_pfnLogToErrorLog(pLogFile, logFileId, outputString, fmtLen);
-}
-
-// November 2024 client - __usercall convention
-void __declspec(naked) Hook_LogToErrorLog_Nov2024()
+void __declspec(naked) Hook_LogToErrorLog()
 {
 	static char outputString[1024];
 	static char* fmt;
 	static int logLevel;
 	
 	__asm {
-		// Save registers
 		push ebp
 		push esi
 		push edi
 		
-		// Extract parameters from __usercall convention:
-		// a2 is at [esp+0x10] (after our 3 pushes + return address)
-		// a3 (log level) is at [esp+0x14]
-		// a4 (format string) is at [esp+0x18]
-		
-		mov eax, [esp + 0x18]  // Get format string pointer
+		mov eax, [esp + 0x18]
 		mov fmt, eax
 		
-		mov eax, [esp + 0x14]  // Get log level
+		mov eax, [esp + 0x14]
 		mov logLevel, eax
 	}
 	
-	// Format the string using variadic args
 	{
 		va_list va;
 		char* argStart = (char*)&fmt + sizeof(char*) + sizeof(int);
@@ -1365,16 +1339,13 @@ void __declspec(naked) Hook_LogToErrorLog_Nov2024()
 		outputString[1023] = 0;
 	}
 	
-	printf("[LogToErrorLog_Nov2024][Level:%d] %s\n", logLevel, outputString);
+	printf("[LogToErrorLog][Level:%d] %s\n", logLevel, outputString);
 	
 	__asm {
-		// Restore registers
 		pop edi
 		pop esi
 		pop ebp
-		
-		// Jump to original function
-		jmp [g_pfnLogToErrorLog_Nov2024]
+		jmp [g_pfnLogToErrorLog]
 	}
 }
 CreateHook(WINAPI, void, OutputDebugStringA, LPCSTR lpOutString)
@@ -1696,25 +1667,11 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		}
 	}
 
-// Try old client signature first
 find = FindPattern(LOGTOERRORLOG_SIG_CSNZ, LOGTOERRORLOG_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-if (find)
-{
-	printf("Found old client LogToErrorLog at 0x%X\n", find - g_dwEngineBase);
-	InlineHook((void*)find, Hook_LogToErrorLog, (void*&)g_pfnLogToErrorLog);
-}
+if (!find)
+	MessageBox(NULL, "LogToErrorLog == NULL!!!", "Error", MB_OK);
 else
-{
-	// Try November 2024 client signature
-	find = FindPattern(LOGTOERRORLOG_SIG_CSNZ_NOV2024, LOGTOERRORLOG_MASK_CSNZ_NOV2024, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-	if (!find)
-		MessageBox(NULL, "LogToErrorLog == NULL (tried both signatures)!!!", "Error", MB_OK);
-	else
-	{
-		printf("Found November 2024 client LogToErrorLog at 0x%X\n", find - g_dwEngineBase);
-		InlineHook((void*)find, Hook_LogToErrorLog_Nov2024, (void*&)g_pfnLogToErrorLog_Nov2024);
-	}
-}
+	InlineHook((void*)find, Hook_LogToErrorLog, (void*&)g_pfnLogToErrorLog);
 
 	g_pEngine = (cl_enginefunc_t*)(PVOID) * (PDWORD)(FindPush(g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, (PCHAR)("ScreenFade")) + 0x0D);
 	if (!g_pEngine)
