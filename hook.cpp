@@ -162,8 +162,6 @@ tParseCSV g_pfnParseCSV;
 typedef void*(*tEVP_CIPHER_CTX_new)();
 tEVP_CIPHER_CTX_new g_pfnEVP_CIPHER_CTX_new;
 
-void* g_pfnLogToErrorLog_Nov2024 = nullptr;
-
 #pragma region Nexon NGClient/NXGSM
 char NGClient_Return1()
 {
@@ -1348,6 +1346,7 @@ void __declspec(naked) Hook_LogToErrorLog()
 		jmp [g_pfnLogToErrorLog]
 	}
 }
+
 CreateHook(WINAPI, void, OutputDebugStringA, LPCSTR lpOutString)
 {
 	printf("[OutputDebugString] %s\n", lpOutString);
@@ -1667,11 +1666,11 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		}
 	}
 
-find = FindPattern(LOGTOERRORLOG_SIG_CSNZ, LOGTOERRORLOG_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-if (!find)
-	MessageBox(NULL, "LogToErrorLog == NULL!!!", "Error", MB_OK);
-else
-	InlineHook((void*)find, Hook_LogToErrorLog, (void*&)g_pfnLogToErrorLog);
+	find = FindPattern(LOGTOERRORLOG_SIG_CSNZ, LOGTOERRORLOG_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+	if (!find)
+		MessageBox(NULL, "LogToErrorLog == NULL!!!", "Error", MB_OK);
+	else
+		InlineHook((void*)find, Hook_LogToErrorLog, (void*&)g_pfnLogToErrorLog);
 
 	g_pEngine = (cl_enginefunc_t*)(PVOID) * (PDWORD)(FindPush(g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, (PCHAR)("ScreenFade")) + 0x0D);
 	if (!g_pEngine)
