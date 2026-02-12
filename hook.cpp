@@ -991,6 +991,28 @@ void Metadata_RequestAll()
 	}
 }
 
+int counter = 0;
+void DumpPacket(const char* packetName, void* packetBuffer, int packetSize)
+{
+	//char subType = *(char*)packetBuffer;
+
+	CreateDirectory(packetName, NULL);
+
+	char name[MAX_PATH];
+	sprintf_s(name, "%s/%s_%d.bin", packetName, packetName, counter++);
+
+	FILE* file = fopen(name, "wb");
+	if (file)
+	{
+		fwrite(packetBuffer, packetSize, 1, file);
+		fclose(file);
+	}
+	else
+	{
+		printf("Can't open '%s' file to write %s dump\n", name, packetName);
+	}
+}
+
 CreateHookClass(int, Packet_Login_Parse, void* packetBuffer, int packetSize)
 {
 	printf("\n========================================\n");
@@ -1017,28 +1039,6 @@ CreateHookClass(int, Packet_Login_Parse, void* packetBuffer, int packetSize)
 	printf("[Packet_Login_Parse] Original handler returned: %d\n", result);
 	
 	return result;
-}
-
-int counter = 0;
-void DumpPacket(const char* packetName, void* packetBuffer, int packetSize)
-{
-	//char subType = *(char*)packetBuffer;
-
-	CreateDirectory(packetName, NULL);
-
-	char name[MAX_PATH];
-	sprintf_s(name, "%s/%s_%d.bin", packetName, packetName, counter++);
-
-	FILE* file = fopen(name, "wb");
-	if (file)
-	{
-		fwrite(packetBuffer, packetSize, 1, file);
-		fclose(file);
-	}
-	else
-	{
-		printf("Can't open '%s' file to write %s dump\n", name, packetName);
-	}
 }
 
 CreateHookClass(int, Packet_Quest_Parse, void* packetBuffer, int packetSize)
