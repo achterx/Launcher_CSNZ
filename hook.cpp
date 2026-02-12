@@ -161,6 +161,7 @@ tParseCSV g_pfnParseCSV;
 
 typedef void*(*tEVP_CIPHER_CTX_new)();
 tEVP_CIPHER_CTX_new g_pfnEVP_CIPHER_CTX_new;
+void* g_pfnLogToErrorLog = nullptr;
 
 #pragma region Nexon NGClient/NXGSM
 char NGClient_Return1()
