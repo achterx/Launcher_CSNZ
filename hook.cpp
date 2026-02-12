@@ -1219,7 +1219,21 @@ CreateHookClass(int, ReadPacket, char* outBuf, int len, unsigned short* outLen, 
 	// this + 0x34 - read buf
 
 	// 0 - got message, 4 - wrong header, 6 - idk, 7 - got less than 4 bytes, 8 - bad sequence
-	if (!initialMsg && result == 0)
+	if (!initialMsg)
+	{
+		if (result == 0 && outLen && *outLen > 0)
+		{
+			printf("[ReadPacket] Got packet - ID: %d, Size: %d\n", (unsigned char)outBuf[0], *outLen);
+		}
+		else
+		{
+			static int failCount = 0;
+			if (++failCount % 500 == 0)
+				printf("[ReadPacket] Still waiting... (%d attempts, last result: %d)\n", failCount, result);
+		}
+	}
+
+	if (g_bDumpAll && !initialMsg && result == 0 && outLen && *outLen > 0)
 	{
 		// create folder
 		CreateDirectory("Packets", NULL);
@@ -1668,14 +1682,12 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 			InlineHook((void*)find, Hook_Packet_Crypt_Parse, (void*&)g_pfnPacket_Crypt_Parse);
 	}
 
-	if (g_bDumpAll)
-	{
-		find = FindPattern(READPACKET_SIG_CSNZ, READPACKET_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-		if (!find)
-			MessageBox(NULL, "ReadPacket == NULL!!!", "Error", MB_OK);
-		else
-			InlineHookFromCallOpcode((void*)find, Hook_ReadPacket, (void*&)g_pfnReadPacket, dummy);
-	}
+	// Always hook ReadPacket for diagnostics - file dumping is gated by g_bDumpAll inside the hook
+	find = FindPattern(READPACKET_SIG_CSNZ, READPACKET_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+	if (!find)
+		MessageBox(NULL, "ReadPacket == NULL!!!", "Error", MB_OK);
+	else
+		InlineHookFromCallOpcode((void*)find, Hook_ReadPacket, (void*&)g_pfnReadPacket, dummy);
 
 	// patch launcher name in hw.dll to fix annoying message box (length of launcher filename must be < original name)
 	find = FindPattern("cstrike-online.exe", strlen("cstrike-online.exe"), g_dwEngineBase, g_dwEngineBase + g_dwEngineSize);
