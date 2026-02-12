@@ -89,9 +89,12 @@ DWORD g_dwFileSystemSize;
 
 // ── vtable-based LoadJSON resolution ─────────────────────────────────────────
 // sub_2487F80 is the JSON manager singleton getter: void* GetJSONManager()
+//   A1 08 FA D0 03   mov eax, dword_3D0FA08
+//   C3               retn
 // LoadJSON lives at vtable offset +0x4D0 (index 308), signature:
 //   void __thiscall LoadJSON(void* this, void** filename, void** buffer)
-#define ADDR_GetJSONManager     0x2487F80
+#define GETJSONMANAGER_SIG_CSNZ  "\xA1\x08\xFA\xD0\x03\xC3"
+#define GETJSONMANAGER_MASK_CSNZ "xxxxxx"
 #define VTABLE_IDX_LOADJSON     (0x4D0 / 4)   // 308
 #define VTABLE_IDX_FILEEXISTS   (0x4CC / 4)   // 307
 
@@ -1627,10 +1630,15 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 				g_pfnParseCSV = (tParseCSV)(parseCsvCallAddr + 4 + *(DWORD*)parseCsvCallAddr);
 			}
 
-			// Hook the JSON manager singleton getter (sub_2487F80 @ 0x2487F80).
+			// Hook the JSON manager singleton getter (sub_2487F80).
 			// The first time anything calls it we resolve the vtable, hook the real
-			// LoadJSON (vtable offset +0x4D0), and self-remove this getter hook.
-			InlineHook((void*)ADDR_GetJSONManager, Hook_GetJSONManager, (void*&)g_pfnGetJSONManager);
+			// LoadJSON (vtable offset +0x4D0), and the g_bJsonResolved guard
+			// ensures we only install the hook once.
+			find = FindPattern(GETJSONMANAGER_SIG_CSNZ, GETJSONMANAGER_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+			if (!find)
+				MessageBox(NULL, "GetJSONManager == NULL!!!", "Error", MB_OK);
+			else
+				InlineHook((void*)find, Hook_GetJSONManager, (void*&)g_pfnGetJSONManager);
 		}
 	}
 
