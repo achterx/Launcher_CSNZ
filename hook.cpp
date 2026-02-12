@@ -312,13 +312,17 @@ std::unordered_map<std::string, dediCsvType> dediCsv = {
 
 bool LoadCsv(int* _this, const char* filename, unsigned char* defaultBuf, int defaultBufSize)
 {
+	printf("\n[LoadCsv HELPER] START - filename: %s\n", filename);
+	
 	unsigned char* buffer = NULL;
 	long size = 0;
 
 	if (g_bLoadDediCsvFromFile)
 	{
+		printf("[LoadCsv HELPER] Attempting to load from file...\n");
 		char path[MAX_PATH];
 		snprintf(path, sizeof(path), "%s/Data/%s", Sys_GetLongPathNameWithoutBin(), filename);
+		printf("[LoadCsv HELPER] File path: %s\n", path);
 
 		FILE* file = fopen(path, "rb");
 		if (!file)
@@ -330,12 +334,16 @@ bool LoadCsv(int* _this, const char* filename, unsigned char* defaultBuf, int de
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
 		rewind(file);
+		printf("[LoadCsv HELPER] File size: %ld\n", size);
 
 		if (size)
 		{
 			buffer = (unsigned char*)malloc(size);
 			if (buffer)
+			{
 				fread(buffer, 1, size, file);
+				printf("[LoadCsv HELPER] Successfully read from file\n");
+			}
 			else
 				printf("LoadCsv: %s failed to load from file (malloc failed), loading from filesystem\n", filename);
 		}
@@ -349,6 +357,7 @@ bool LoadCsv(int* _this, const char* filename, unsigned char* defaultBuf, int de
 	}
 
 LoadFileSystem:
+	printf("[LoadCsv HELPER] Attempting to load from filesystem...\n");
 	FileHandle_t fh = g_pFileSystem->Open(filename, "rb", 0);
 	if (!fh)
 	{
@@ -357,11 +366,16 @@ LoadFileSystem:
 	}
 
 	size = g_pFileSystem->Size(fh);
+	printf("[LoadCsv HELPER] Filesystem size: %ld\n", size);
+	
 	if (size)
 	{
 		buffer = (unsigned char*)malloc(size);
 		if (buffer)
+		{
 			g_pFileSystem->Read(buffer, size, fh);
+			printf("[LoadCsv HELPER] Successfully read from filesystem\n");
+		}
 		else
 			printf("LoadCsv: %s failed to load from filesystem (malloc failed), loading hardcoded values\n", filename);
 	}
@@ -374,15 +388,23 @@ LoadFileSystem:
 		goto SetBuffer;
 
 LoadDefaultBuf:
+	printf("[LoadCsv HELPER] Using hardcoded buffer - size: %d\n", defaultBufSize);
 	buffer = defaultBuf;
 	size = defaultBufSize;
 
 SetBuffer:
+	printf("[LoadCsv HELPER] Calling g_pfnParseCSV...\n");
+	printf("[LoadCsv HELPER] _this: %p, buffer: %p, size: %ld\n", (void*)_this, (void*)buffer, size);
+	
 	g_pfnParseCSV(_this, buffer, size);
+	
+	printf("[LoadCsv HELPER] g_pfnParseCSV completed\n");
 
 	bool result = 0;
 	if (_this[2])
 		result = _this[3] != 0;
+		
+	printf("[LoadCsv HELPER] END - returning %d\n", result);
 
 	return result;
 }
@@ -421,13 +443,17 @@ CreateHookClassType(bool, CreateStringTable, int, const char* filename)
 
 bool LoadJson(std::string* filename, std::string* oriBuf, unsigned char* defaultBuf, int defaultBufSize)
 {
+	printf("[LoadJson HELPER] START - filename: %s\n", filename->c_str());
+	
 	unsigned char* buffer = NULL;
 	long size = 0;
 
 	if (g_bLoadDediCsvFromFile)
 	{
+		printf("[LoadJson HELPER] Attempting to load from file...\n");
 		char path[MAX_PATH];
 		snprintf(path, sizeof(path), "%s/Data/%s", Sys_GetLongPathNameWithoutBin(), filename->c_str());
+		printf("[LoadJson HELPER] File path: %s\n", path);
 
 		FILE* file = fopen(path, "rb");
 		if (!file)
@@ -439,12 +465,16 @@ bool LoadJson(std::string* filename, std::string* oriBuf, unsigned char* default
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
 		rewind(file);
+		printf("[LoadJson HELPER] File size: %ld\n", size);
 
 		if (size)
 		{
 			buffer = (unsigned char*)malloc(size);
 			if (buffer)
+			{
 				fread(buffer, 1, size, file);
+				printf("[LoadJson HELPER] Successfully read from file\n");
+			}
 			else
 				printf("LoadJson: %s failed to load from file (malloc failed), loading from filesystem\n", filename->c_str());
 		}
@@ -458,6 +488,7 @@ bool LoadJson(std::string* filename, std::string* oriBuf, unsigned char* default
 	}
 
 LoadFileSystem:
+	printf("[LoadJson HELPER] Attempting to load from filesystem...\n");
 	FileHandle_t fh = g_pFileSystem->Open(filename->c_str(), "r", 0);
 	if (!fh)
 	{
@@ -466,11 +497,16 @@ LoadFileSystem:
 	}
 
 	size = g_pFileSystem->Size(fh);
+	printf("[LoadJson HELPER] Filesystem size: %ld\n", size);
+	
 	if (size)
 	{
 		buffer = (unsigned char*)malloc(size);
 		if (buffer)
+		{
 			g_pFileSystem->Read(buffer, size, fh);
+			printf("[LoadJson HELPER] Successfully read from filesystem\n");
+		}
 		else
 			printf("LoadJson: %s failed to load from filesystem (malloc failed), loading hardcoded values\n", filename->c_str());
 	}
@@ -483,56 +519,76 @@ LoadFileSystem:
 		goto SetBuffer;
 
 LoadDefaultBuf:
+	printf("[LoadJson HELPER] Using hardcoded buffer - size: %d\n", defaultBufSize);
 	buffer = defaultBuf;
 	size = defaultBufSize;
 
 SetBuffer:
+	printf("[LoadJson HELPER] Setting buffer to oriBuf - size: %ld\n", size);
+	printf("[LoadJson HELPER] First 50 bytes: %.50s\n", (char*)buffer);
 	*oriBuf = std::string((char*)buffer, (char*)buffer + size);
+	printf("[LoadJson HELPER] Successfully set oriBuf\n");
+	printf("[LoadJson HELPER] END - returning 1\n");
 
 	return 1;
 }
 
 CreateHookClass(int, LoadJson, std::string* filename, std::string* buffer)
 {
+	printf("\n========================================\n");
+	printf("[Hook_LoadJson] ENTER - Requested: '%s'\n", filename->c_str());
+	printf("========================================\n");
+	
 	if (dediCsv.find(*filename) != dediCsv.end())
 	{
+		printf("[Hook_LoadJson] FOUND in map! Type enum value: %d\n", dediCsv[*filename]);
+		
 		switch (dediCsv[*filename])
 		{
-case ZombieSkillProperty_Crazy: 
-    printf("[DEBUG] Loading Crazy, first 50 bytes: %.50s\n", (char*)g_ZombieSkillProperty_Crazy);
-    return LoadJson(filename, buffer, g_ZombieSkillProperty_Crazy, sizeof(g_ZombieSkillProperty_Crazy));
-	    case ZombieSkillProperty_JumpBuff: return LoadJson(filename, buffer, g_ZombieSkillProperty_JumpBuff, sizeof(g_ZombieSkillProperty_JumpBuff));
-		case ZombieSkillProperty_ArmorUp: return LoadJson(filename, buffer, g_ZombieSkillProperty_ArmorUp, sizeof(g_ZombieSkillProperty_ArmorUp));
-		case ZombieSkillProperty_Heal: return LoadJson(filename, buffer, g_ZombieSkillProperty_Heal, sizeof(g_ZombieSkillProperty_Heal));
-		case ZombieSkillProperty_ShieldBuf: return LoadJson(filename, buffer, g_ZombieSkillProperty_ShieldBuf, sizeof(g_ZombieSkillProperty_ShieldBuf));
-		case ZombieSkillProperty_Cloacking: return LoadJson(filename, buffer, g_ZombieSkillProperty_Cloacking, sizeof(g_ZombieSkillProperty_Cloacking));
-		case ZombieSkillProperty_Trap: return LoadJson(filename, buffer, g_ZombieSkillProperty_Trap, sizeof(g_ZombieSkillProperty_Trap));
-		case ZombieSkillProperty_Smoke: return LoadJson(filename, buffer, g_ZombieSkillProperty_Smoke, sizeof(g_ZombieSkillProperty_Smoke));
-		case ZombieSkillProperty_VoodooHeal: return LoadJson(filename, buffer, g_ZombieSkillProperty_VoodooHeal, sizeof(g_ZombieSkillProperty_VoodooHeal));
-		case ZombieSkillProperty_Shock: return LoadJson(filename, buffer, g_ZombieSkillProperty_Shock, sizeof(g_ZombieSkillProperty_Shock));
-		case ZombieSkillProperty_Rush: return LoadJson(filename, buffer, g_ZombieSkillProperty_Rush, sizeof(g_ZombieSkillProperty_Rush));
-		case ZombieSkillProperty_Pile: return LoadJson(filename, buffer, g_ZombieSkillProperty_Pile, sizeof(g_ZombieSkillProperty_Pile));
-		case ZombieSkillProperty_Bat: return LoadJson(filename, buffer, g_ZombieSkillProperty_Bat, sizeof(g_ZombieSkillProperty_Bat));
-		case ZombieSkillProperty_Stiffen: return LoadJson(filename, buffer, g_ZombieSkillProperty_Stiffen, sizeof(g_ZombieSkillProperty_Stiffen));
-		case ZombieSkillProperty_SelfDestruct: return LoadJson(filename, buffer, g_ZombieSkillProperty_SelfDestruct, sizeof(g_ZombieSkillProperty_SelfDestruct));
-		case ZombieSkillProperty_Penetration: return LoadJson(filename, buffer, g_ZombieSkillProperty_Penetration, sizeof(g_ZombieSkillProperty_Penetration));
-		case ZombieSkillProperty_Revival: return LoadJson(filename, buffer, g_ZombieSkillProperty_Revival, sizeof(g_ZombieSkillProperty_Revival));
-		case ZombieSkillProperty_Telleport: return LoadJson(filename, buffer, g_ZombieSkillProperty_Telleport, sizeof(g_ZombieSkillProperty_Telleport));
-		case ZombieSkillProperty_Boost: return LoadJson(filename, buffer, g_ZombieSkillProperty_Boost, sizeof(g_ZombieSkillProperty_Boost));
-		case ZombieSkillProperty_BombCreate: return LoadJson(filename, buffer, g_ZombieSkillProperty_BombCreate, sizeof(g_ZombieSkillProperty_BombCreate));
-		case ZombieSkillProperty_Flying: return LoadJson(filename, buffer, g_ZombieSkillProperty_Flying, sizeof(g_ZombieSkillProperty_Flying));
-		case ZombieSkillProperty_Fireball: return LoadJson(filename, buffer, g_ZombieSkillProperty_Fireball, sizeof(g_ZombieSkillProperty_Fireball));
-		case ZombieSkillProperty_DogShoot: return LoadJson(filename, buffer, g_ZombieSkillProperty_DogShoot, sizeof(g_ZombieSkillProperty_DogShoot));
-		case ZombieSkillProperty_ViolentRush: return LoadJson(filename, buffer, g_ZombieSkillProperty_ViolentRush, sizeof(g_ZombieSkillProperty_ViolentRush));
-		case ZombieSkillProperty_WebShooter: return LoadJson(filename, buffer, g_ZombieSkillProperty_WebShooter, sizeof(g_ZombieSkillProperty_WebShooter));
-		case ZombieSkillProperty_WebBomb: return LoadJson(filename, buffer, g_ZombieSkillProperty_WebBomb, sizeof(g_ZombieSkillProperty_WebBomb));
-		case ZombieSkillProperty_Protect: return LoadJson(filename, buffer, g_ZombieSkillProperty_Protect, sizeof(g_ZombieSkillProperty_Protect));
-		case ZombieSkillProperty_ChargeSlash: return LoadJson(filename, buffer, g_ZombieSkillProperty_ChargeSlash, sizeof(g_ZombieSkillProperty_ChargeSlash));
-		case ZombieSkillProperty_Claw: return LoadJson(filename, buffer, g_ZombieSkillProperty_Claw, sizeof(g_ZombieSkillProperty_Claw));
+		case ZombieSkillProperty_Crazy:
+			printf("[Hook_LoadJson] Case: ZombieSkillProperty_Crazy\n");
+			printf("[Hook_LoadJson] g_ZombieSkillProperty_Crazy address: %p\n", (void*)g_ZombieSkillProperty_Crazy);
+			printf("[Hook_LoadJson] g_ZombieSkillProperty_Crazy size: %d\n", sizeof(g_ZombieSkillProperty_Crazy));
+			printf("[Hook_LoadJson] First 50 bytes: %.50s\n", (char*)g_ZombieSkillProperty_Crazy);
+			printf("[Hook_LoadJson] Calling LoadJson helper...\n");
+			int result = LoadJson(filename, buffer, g_ZombieSkillProperty_Crazy, sizeof(g_ZombieSkillProperty_Crazy));
+			printf("[Hook_LoadJson] LoadJson helper returned: %d\n", result);
+			printf("[Hook_LoadJson] EXIT - returning %d\n", result);
+			printf("========================================\n\n");
+			return result;
+			
+		case ZombieSkillProperty_JumpBuff:
+			printf("[Hook_LoadJson] Case: ZombieSkillProperty_JumpBuff - NO HARDCODED DATA!\n");
+			printf("[Hook_LoadJson] This should NOT happen - falling through to original\n");
+			break;
+			
+		case ZombieSkillProperty_ArmorUp:
+			printf("[Hook_LoadJson] Case: ZombieSkillProperty_ArmorUp - NO HARDCODED DATA!\n");
+			printf("[Hook_LoadJson] This should NOT happen - falling through to original\n");
+			break;
+			
+		// Add similar logging for other cases if needed...
+		default:
+			printf("[Hook_LoadJson] DEFAULT case - enum value %d has no handler!\n", dediCsv[*filename]);
+			printf("[Hook_LoadJson] Falling through to original function\n");
+			break;
 		}
 	}
-
-return g_pfnLoadJson(ptr, filename, buffer);
+	else
+	{
+		printf("[Hook_LoadJson] NOT in map - calling original function\n");
+	}
+	
+	printf("[Hook_LoadJson] Calling g_pfnLoadJson (original)...\n");
+	printf("[Hook_LoadJson] ptr: %p, filename: %s\n", ptr, filename->c_str());
+	
+	int result = g_pfnLoadJson(ptr, filename, buffer);
+	
+	printf("[Hook_LoadJson] Original function returned: %d\n", result);
+	printf("[Hook_LoadJson] EXIT\n");
+	printf("========================================\n\n");
+	
+	return result;
 }
 
 enum metaDataType
