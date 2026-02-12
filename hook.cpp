@@ -492,7 +492,7 @@ SetBuffer:
 	return 1;
 }
 
-CreateHook(__stdcall, int, LoadJson, std::string* filename, std::string* buffer)
+CreateHookClass(int, LoadJson, std::string* filename, std::string* buffer)
 {
 	if (dediCsv.find(*filename) != dediCsv.end())
 	{
@@ -530,7 +530,7 @@ CreateHook(__stdcall, int, LoadJson, std::string* filename, std::string* buffer)
 		}
 	}
 
-	return g_pfnLoadJson(filename, buffer);
+return g_pfnLoadJson(ptr, filename, buffer);
 }
 
 enum metaDataType
