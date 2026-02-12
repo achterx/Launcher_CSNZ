@@ -546,6 +546,7 @@ CreateHookClass(int, LoadJson, std::string* filename, std::string* buffer)
 		switch (dediCsv[*filename])
 		{
 		case ZombieSkillProperty_Crazy:
+		{
 			printf("[Hook_LoadJson] Case: ZombieSkillProperty_Crazy\n");
 			printf("[Hook_LoadJson] g_ZombieSkillProperty_Crazy address: %p\n", (void*)g_ZombieSkillProperty_Crazy);
 			printf("[Hook_LoadJson] g_ZombieSkillProperty_Crazy size: %d\n", sizeof(g_ZombieSkillProperty_Crazy));
@@ -556,6 +557,7 @@ CreateHookClass(int, LoadJson, std::string* filename, std::string* buffer)
 			printf("[Hook_LoadJson] EXIT - returning %d\n", result);
 			printf("========================================\n\n");
 			return result;
+		}
 			
 		case ZombieSkillProperty_JumpBuff:
 			printf("[Hook_LoadJson] Case: ZombieSkillProperty_JumpBuff - NO HARDCODED DATA!\n");
@@ -567,7 +569,6 @@ CreateHookClass(int, LoadJson, std::string* filename, std::string* buffer)
 			printf("[Hook_LoadJson] This should NOT happen - falling through to original\n");
 			break;
 			
-		// Add similar logging for other cases if needed...
 		default:
 			printf("[Hook_LoadJson] DEFAULT case - enum value %d has no handler!\n", dediCsv[*filename]);
 			printf("[Hook_LoadJson] Falling through to original function\n");
