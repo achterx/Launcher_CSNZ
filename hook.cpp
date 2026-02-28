@@ -39,20 +39,17 @@ DWORD g_dwFileSystemSize;
 #define SERVERCONNECT_SIG_CSNZ2019 "\xE8\x00\x00\x00\x00\x85\xC0\x75\x00\x46"
 #define SERVERCONNECT_MASK_CSNZ2019 "x????xxx?x"
 
-#define PACKET_METADATA_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x57\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xF1\x89\xB5\x00\x00\x00\x00\x8B\x45\x00\x89\x85"
-#define PACKET_METADATA_PARSE_MASK_CSNZ "xxxx?x????xx????xxx????x????xxxx?xxxxx?xx????xxxx????xx?xx"
-
-#define PACKET_LOGIN_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x53\x56\x57\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xD9"
-#define PACKET_LOGIN_PARSE_MASK_CSNZ "xxxx?x????xx????xxx????x????xxxx?xxxxxx?xx????xx"
+#define PACKET_METADATA_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\xFF\x68\xCC\xCC\xCC\xCC\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\x84\x01\x00\x00\xA1\xCC\xCC\xCC\xCC\x33\xC5\x89\x45\xF0\x56\x57\x50\x8D\x45\xF4\x64\xA3\x00\x00\x00\x00\x8B\xF9\x89\x7D\xCC\x8B\x45\x08\x89\x85\x5C\xFF\xFF\xFF\x8B\x45\x0C\xC7\x85\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xC7\x85\x60\xFF\xFF\xFF\x00\x00\x00\x00\x89\x85\x64\xFF\xFF\xFF\x6A\x01\x8D\x85\x41\xFF\xFF\xFF\xC7\x45\xFC\x00\x00\x00\x00\x50\x8D\x8D\x58\xFF\xFF\xFF\xE8\xCC\xCC\xCC\xCC\x0F\xB6\xB5\x41\xFF\xFF\xFF\x8D\x47\x18\x89\x85\x44\xFF\xFF\xFF\x83\xFE\x40\x73\x20\x8B\x00\x6B\xD6\x2C\x83\x7C\x02\x28\x00\x74\x1A\x56\x8D\x85\x58\xFF\xFF\xFF\x8B\xCF\x50\xE8\xCC\xCC\xCC\xCC\xE9\xCC\xCC\xCC\xCC\x89\x85\x44\xFF\xFF\xFF\x83\xC6\xFD\x81\xFE\xFC\x00\x00\x00\x0F\x87\xCC\xCC\xCC\xCC\x0F\xB6\x86\xCC\xCC\xCC\xCC\xFF\x24\x85\xCC\xCC\xCC\xCC\x8D\x8D\x58\xFF\xFF\xFF\xE8\xCC\xCC\xCC\xCC\x0F\xB6\xC0\x89\x85\xD4\xFE\xFF\xFF\x85\xC0\x0F\x84\xCC\xCC\xCC\xCC\x6A\x04\x8D\x85\x4C\xFF\xFF\xFF\x50\x8D\x8D\x58\xFF\xFF\xFF\xE8\xCC\xCC\xCC\xCC\x6A\x01\x8D\x85\x41\xFF\xFF\xFF\x50"
+#define PACKET_METADATA_PARSE_MASK_CSNZ "xxxxxx????xxxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????????xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????x????xxxxxxxxxxxxxxxxx????xxx????xxx????xxxxxxx????xxxxxxxxxxxxx????xxxxxxxxxxxxxxxx????xxxxxxxxx"
 
 #define PACKET_QUEST_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x83\xEC\x00\x53\x56\x57\xA1\x00\x00\x00\x00\x33\xC5\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xF9\x8B\x45\x00\x89\x45\x00\x8B\x45\x00\xC7\x45\x00\x00\x00\x00\x00\xC7\x45\x00\x00\x00\x00\x00\x89\x45\x00\x6A\x00\x8D\x45\x00\xC7\x45\x00\x00\x00\x00\x00\x50\x8D\x4D\x00\xE8\x00\x00\x00\x00\x0F\xB6\x45\x00\x89\x47\x00\xE8\x00\x00\x00\x00\x8B\x47\x00\x48"
 #define PACKET_QUEST_PARSE_MASK_CSNZ "xxxx?x????xx????xxx?xxxx????xxxxx?xx????xxxx?xx?xx?xx?????xx?????xx?x?xx?xx?????xxx?x????xxx?xx?x????xx?x"
 
-#define PACKET_UMSG_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x57\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xF9\x89\xBD"
-#define PACKET_UMSG_PARSE_MASK_CSNZ "xxxx?x????xx????xx????x????x????xxxx?xxxxx?xx????xxxx"
+#define PACKET_UMSG_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\xFF\x68\xCC\xCC\xCC\xCC\x64\xA1\x00\x00\x00\x00\x50\xB8\x2C\x13"
+#define PACKET_UMSG_PARSE_MASK_CSNZ "xxxxxx????xxxxxxxxxx"
 
-#define PACKET_ALARM_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x57\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xF9\x89\xBD\x00\x00\x00\x00\x8B\x45\x00\xC7\x85\x00\x00\x00\x00\x00\x00\x00\x00\x89\x85\x00\x00\x00\x00\x8B\x45\x00\xC7\x85\x00\x00\x00\x00\x00\x00\x00\x00\xC7\x85\x00\x00\x00\x00\x00\x00\x00\x00\x89\x85\x00\x00\x00\x00\x6A\x00\x8D\x85\x00\x00\x00\x00\xC7\x45\x00\x00\x00\x00\x00\x50\x8D\x8D\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x0F\xB6\x85\x00\x00\x00\x00\x83\xF8"
-#define PACKET_ALARM_PARSE_MASK_CSNZ "xxxx?x????xx????xxx????x????xxxx?xxxxx?xx????xxxx????xx?xx????????xx????xx?xx????????xx????????xx????x?xx????xx?????xxx????x????xxx????xx"
+#define PACKET_ALARM_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\xFF\x68\xCC\xCC\xCC\xCC\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\xCC\x01\x00\x00\xA1\xCC\xCC\xCC\xCC\x33\xC5\x89\x45\xF0\x56\x57\x50\x8D\x45\xF4\x64\xA3\x00\x00\x00\x00\x8B\xF1"
+#define PACKET_ALARM_PARSE_MASK_CSNZ "xxxxxx????xxxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxxx"
 
 #define PACKET_ITEM_PARSE_SIG_CSNZ "\x55\x8B\xEC\x6A\x00\x68\x00\x00\x00\x00\x64\xA1\x00\x00\x00\x00\x50\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x57\x50\x8D\x45\x00\x64\xA3\x00\x00\x00\x00\x8B\xF1\x8B\x45\x00\xC7\x85"
 #define PACKET_ITEM_PARSE_MASK_CSNZ "xxxx?x????xx????xxx????x????xxxx?xxxxx?xx????xxxx?xx"
@@ -90,11 +87,11 @@ DWORD g_dwFileSystemSize;
 #define CREATESTRINGTABLE_SIG_CSNZ "\x55\x8B\xEC\x53\x56\x8B\xF1\xC7\x46"
 #define CREATESTRINGTABLE_MASK_CSNZ "xxxxxxxxx"
 
-#define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\xB8\xB4\xFC\x02\x53\x56\x8B\x75\x0C\x8B\x01\x57\x8B\x50\x30"
-#define LOADJSON_MASK_CSNZ "xxxxx????xxxxxxxxxxx"
+#define LOADJSON_SIG_CSNZ "\x55\x8B\xEC\x8B\x0D\x00\x00\x00\x00\x53\x56\x8B\x75\x00\x8B\x01\x57\x8B\x50\x00\x8B\x45\x00\x83\x78\x00\x00\x76\x00\x8B\x00\x6A\x00\x68\x00\x00\x00\x00\x50\xFF\xD2\x8B\x0D\x00\x00\x00\x00\x8B\xD8\x53\x8B\x11\xFF\x52\x00\x8B\xF8\x85\xFF\x74"
+#define LOADJSON_MASK_CSNZ "xxxxx????xxxx?xxxxx?xx?xx??x?xxx?x????xxxxx????xxxxxxx?xxxxx"
 
-#define LOGTOERRORLOG_SIG_CSNZ "\x53\x8B\xDC\x83\xEC\x00\x83\xE4\x00\x83\xC4\x00\x55\x8B\x6B\x00\x89\x6C\x24\x00\x8B\xEC\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x8B\x73\x00\x8D\x43"
-#define LOGTOERRORLOG_MASK_CSNZ "xxxxx?xx?xx?xxx?xxx?xxxx????x????xxxx?xxx?xx"
+#define LOGTOERRORLOG_SIG_CSNZ "\x55\x8B\xEC\x81\xEC\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\x00\x56\x57\x8B\x7D\x00\x8D\x45\x00\x50\x6A"
+#define LOGTOERRORLOG_MASK_CSNZ "xxxxx????x????xxxx?xxxx?xx?xx"
 
 #define READPACKET_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF0\x83\xFE\x00\x77"
 #define READPACKET_MASK_CSNZ "x????xxxx?x"
@@ -102,11 +99,14 @@ DWORD g_dwFileSystemSize;
 #define GETSSLPROTOCOLNAME_SIG_CSNZ "\xE8\x00\x00\x00\x00\xB9\x00\x00\x00\x00\x8A\x10"
 #define GETSSLPROTOCOLNAME_MASK_CSNZ "x????x????xx"
 
-#define SOCKETCONSTRUCTOR_SIG_CSNZ "\x6A\x00\x68\x00\x00\x08\x00\x68\x00\x00\x08\x00\x8B\xC8\xE8"
-#define SOCKETCONSTRUCTOR_MASK_CSNZ "x?x??x?x??x?xxx"
+#define SOCKETCONSTRUCTOR_SIG_CSNZ "\xE8\xCC\xCC\xCC\xCC\xEB\x02\x33\xC0\xFF\x75\x0C\xC7\x45"
+#define SOCKETCONSTRUCTOR_MASK_CSNZ "x????xxxxxxxxx"
 
 #define EVP_CIPHER_CTX_NEW_SIG_CSNZ "\xE8\x00\x00\x00\x00\x8B\xF8\x89\xBE"
 #define EVP_CIPHER_CTX_NEW_MASK_CSNZ "x????xxxx"
+
+#define FPS_LIMIT_SIG_CSNZ "\x55\x8B\xEC\xF2\x0F\x10\x25\x00\x00\x00\x00\x57\x8B\x7D\x08\xF2\x0F\x10\x47\x08"
+#define FPS_LIMIT_MASK_CSNZ "xxxxxxx????xxxxxxxxx"
 
 char g_pServerIP[16];
 char g_pServerPort[6];
@@ -128,7 +128,6 @@ bool g_bWriteMetadata = false;
 bool g_bLoadDediCsvFromFile = false;
 bool g_bRegister = false;
 bool g_bNoNGHook = false;
-bool g_bDumpLogin = false;
 
 cl_enginefunc_t* g_pEngine;
 
@@ -161,7 +160,6 @@ tParseCSV g_pfnParseCSV;
 
 typedef void*(*tEVP_CIPHER_CTX_new)();
 tEVP_CIPHER_CTX_new g_pfnEVP_CIPHER_CTX_new;
-void* g_pfnLogToErrorLog = nullptr;
 
 #pragma region Nexon NGClient/NXGSM
 char NGClient_Return1()
@@ -317,17 +315,13 @@ std::unordered_map<std::string, dediCsvType> dediCsv = {
 
 bool LoadCsv(int* _this, const char* filename, unsigned char* defaultBuf, int defaultBufSize)
 {
-	printf("\n[LoadCsv HELPER] START - filename: %s\n", filename);
-	
 	unsigned char* buffer = NULL;
 	long size = 0;
 
 	if (g_bLoadDediCsvFromFile)
 	{
-		printf("[LoadCsv HELPER] Attempting to load from file...\n");
 		char path[MAX_PATH];
 		snprintf(path, sizeof(path), "%s/Data/%s", Sys_GetLongPathNameWithoutBin(), filename);
-		printf("[LoadCsv HELPER] File path: %s\n", path);
 
 		FILE* file = fopen(path, "rb");
 		if (!file)
@@ -339,16 +333,12 @@ bool LoadCsv(int* _this, const char* filename, unsigned char* defaultBuf, int de
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
 		rewind(file);
-		printf("[LoadCsv HELPER] File size: %ld\n", size);
 
 		if (size)
 		{
 			buffer = (unsigned char*)malloc(size);
 			if (buffer)
-			{
 				fread(buffer, 1, size, file);
-				printf("[LoadCsv HELPER] Successfully read from file\n");
-			}
 			else
 				printf("LoadCsv: %s failed to load from file (malloc failed), loading from filesystem\n", filename);
 		}
@@ -362,7 +352,6 @@ bool LoadCsv(int* _this, const char* filename, unsigned char* defaultBuf, int de
 	}
 
 LoadFileSystem:
-	printf("[LoadCsv HELPER] Attempting to load from filesystem...\n");
 	FileHandle_t fh = g_pFileSystem->Open(filename, "rb", 0);
 	if (!fh)
 	{
@@ -371,16 +360,11 @@ LoadFileSystem:
 	}
 
 	size = g_pFileSystem->Size(fh);
-	printf("[LoadCsv HELPER] Filesystem size: %ld\n", size);
-	
 	if (size)
 	{
 		buffer = (unsigned char*)malloc(size);
 		if (buffer)
-		{
 			g_pFileSystem->Read(buffer, size, fh);
-			printf("[LoadCsv HELPER] Successfully read from filesystem\n");
-		}
 		else
 			printf("LoadCsv: %s failed to load from filesystem (malloc failed), loading hardcoded values\n", filename);
 	}
@@ -393,23 +377,15 @@ LoadFileSystem:
 		goto SetBuffer;
 
 LoadDefaultBuf:
-	printf("[LoadCsv HELPER] Using hardcoded buffer - size: %d\n", defaultBufSize);
 	buffer = defaultBuf;
 	size = defaultBufSize;
 
 SetBuffer:
-	printf("[LoadCsv HELPER] Calling g_pfnParseCSV...\n");
-	printf("[LoadCsv HELPER] _this: %p, buffer: %p, size: %ld\n", (void*)_this, (void*)buffer, size);
-	
 	g_pfnParseCSV(_this, buffer, size);
-	
-	printf("[LoadCsv HELPER] g_pfnParseCSV completed\n");
 
 	bool result = 0;
 	if (_this[2])
 		result = _this[3] != 0;
-		
-	printf("[LoadCsv HELPER] END - returning %d\n", result);
 
 	return result;
 }
@@ -448,17 +424,13 @@ CreateHookClassType(bool, CreateStringTable, int, const char* filename)
 
 bool LoadJson(std::string* filename, std::string* oriBuf, unsigned char* defaultBuf, int defaultBufSize)
 {
-	printf("[LoadJson HELPER] START - filename: %s\n", filename->c_str());
-	
 	unsigned char* buffer = NULL;
 	long size = 0;
 
 	if (g_bLoadDediCsvFromFile)
 	{
-		printf("[LoadJson HELPER] Attempting to load from file...\n");
 		char path[MAX_PATH];
 		snprintf(path, sizeof(path), "%s/Data/%s", Sys_GetLongPathNameWithoutBin(), filename->c_str());
-		printf("[LoadJson HELPER] File path: %s\n", path);
 
 		FILE* file = fopen(path, "rb");
 		if (!file)
@@ -470,16 +442,12 @@ bool LoadJson(std::string* filename, std::string* oriBuf, unsigned char* default
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
 		rewind(file);
-		printf("[LoadJson HELPER] File size: %ld\n", size);
 
 		if (size)
 		{
 			buffer = (unsigned char*)malloc(size);
 			if (buffer)
-			{
 				fread(buffer, 1, size, file);
-				printf("[LoadJson HELPER] Successfully read from file\n");
-			}
 			else
 				printf("LoadJson: %s failed to load from file (malloc failed), loading from filesystem\n", filename->c_str());
 		}
@@ -493,7 +461,6 @@ bool LoadJson(std::string* filename, std::string* oriBuf, unsigned char* default
 	}
 
 LoadFileSystem:
-	printf("[LoadJson HELPER] Attempting to load from filesystem...\n");
 	FileHandle_t fh = g_pFileSystem->Open(filename->c_str(), "r", 0);
 	if (!fh)
 	{
@@ -502,16 +469,11 @@ LoadFileSystem:
 	}
 
 	size = g_pFileSystem->Size(fh);
-	printf("[LoadJson HELPER] Filesystem size: %ld\n", size);
-	
 	if (size)
 	{
 		buffer = (unsigned char*)malloc(size);
 		if (buffer)
-		{
 			g_pFileSystem->Read(buffer, size, fh);
-			printf("[LoadJson HELPER] Successfully read from filesystem\n");
-		}
 		else
 			printf("LoadJson: %s failed to load from filesystem (malloc failed), loading hardcoded values\n", filename->c_str());
 	}
@@ -524,77 +486,54 @@ LoadFileSystem:
 		goto SetBuffer;
 
 LoadDefaultBuf:
-	printf("[LoadJson HELPER] Using hardcoded buffer - size: %d\n", defaultBufSize);
 	buffer = defaultBuf;
 	size = defaultBufSize;
 
 SetBuffer:
-	printf("[LoadJson HELPER] Setting buffer to oriBuf - size: %ld\n", size);
-	printf("[LoadJson HELPER] First 50 bytes: %.50s\n", (char*)buffer);
 	*oriBuf = std::string((char*)buffer, (char*)buffer + size);
-	printf("[LoadJson HELPER] Successfully set oriBuf\n");
-	printf("[LoadJson HELPER] END - returning 1\n");
 
 	return 1;
 }
 
-CreateHookClass(int, LoadJson, std::string* filename, std::string* buffer)
+CreateHook(__stdcall, int, LoadJson, std::string* filename, std::string* buffer)
 {
-	printf("\n========================================\n");
-	printf("[Hook_LoadJson] ENTER - Requested: '%s'\n", filename->c_str());
-	printf("========================================\n");
-	
 	if (dediCsv.find(*filename) != dediCsv.end())
 	{
-		printf("[Hook_LoadJson] FOUND in map! Type enum value: %d\n", dediCsv[*filename]);
-		
 		switch (dediCsv[*filename])
 		{
-		case ZombieSkillProperty_Crazy:
-		{
-			printf("[Hook_LoadJson] Case: ZombieSkillProperty_Crazy\n");
-			printf("[Hook_LoadJson] g_ZombieSkillProperty_Crazy address: %p\n", (void*)g_ZombieSkillProperty_Crazy);
-			printf("[Hook_LoadJson] g_ZombieSkillProperty_Crazy size: %d\n", sizeof(g_ZombieSkillProperty_Crazy));
-			printf("[Hook_LoadJson] First 50 bytes: %.50s\n", (char*)g_ZombieSkillProperty_Crazy);
-			printf("[Hook_LoadJson] Calling LoadJson helper...\n");
-			int result = LoadJson(filename, buffer, g_ZombieSkillProperty_Crazy, sizeof(g_ZombieSkillProperty_Crazy));
-			printf("[Hook_LoadJson] LoadJson helper returned: %d\n", result);
-			printf("[Hook_LoadJson] EXIT - returning %d\n", result);
-			printf("========================================\n\n");
-			return result;
-		}
-			
-		case ZombieSkillProperty_JumpBuff:
-			printf("[Hook_LoadJson] Case: ZombieSkillProperty_JumpBuff - NO HARDCODED DATA!\n");
-			printf("[Hook_LoadJson] This should NOT happen - falling through to original\n");
-			break;
-			
-		case ZombieSkillProperty_ArmorUp:
-			printf("[Hook_LoadJson] Case: ZombieSkillProperty_ArmorUp - NO HARDCODED DATA!\n");
-			printf("[Hook_LoadJson] This should NOT happen - falling through to original\n");
-			break;
-			
-		default:
-			printf("[Hook_LoadJson] DEFAULT case - enum value %d has no handler!\n", dediCsv[*filename]);
-			printf("[Hook_LoadJson] Falling through to original function\n");
-			break;
+		case ZombieSkillProperty_Crazy: return LoadJson(filename, buffer, g_ZombieSkillProperty_Crazy, sizeof(g_ZombieSkillProperty_Crazy));
+		case ZombieSkillProperty_JumpBuff: return LoadJson(filename, buffer, g_ZombieSkillProperty_JumpBuff, sizeof(g_ZombieSkillProperty_JumpBuff));
+		case ZombieSkillProperty_ArmorUp: return LoadJson(filename, buffer, g_ZombieSkillProperty_ArmorUp, sizeof(g_ZombieSkillProperty_ArmorUp));
+		case ZombieSkillProperty_Heal: return LoadJson(filename, buffer, g_ZombieSkillProperty_Heal, sizeof(g_ZombieSkillProperty_Heal));
+		case ZombieSkillProperty_ShieldBuf: return LoadJson(filename, buffer, g_ZombieSkillProperty_ShieldBuf, sizeof(g_ZombieSkillProperty_ShieldBuf));
+		case ZombieSkillProperty_Cloacking: return LoadJson(filename, buffer, g_ZombieSkillProperty_Cloacking, sizeof(g_ZombieSkillProperty_Cloacking));
+		case ZombieSkillProperty_Trap: return LoadJson(filename, buffer, g_ZombieSkillProperty_Trap, sizeof(g_ZombieSkillProperty_Trap));
+		case ZombieSkillProperty_Smoke: return LoadJson(filename, buffer, g_ZombieSkillProperty_Smoke, sizeof(g_ZombieSkillProperty_Smoke));
+		case ZombieSkillProperty_VoodooHeal: return LoadJson(filename, buffer, g_ZombieSkillProperty_VoodooHeal, sizeof(g_ZombieSkillProperty_VoodooHeal));
+		case ZombieSkillProperty_Shock: return LoadJson(filename, buffer, g_ZombieSkillProperty_Shock, sizeof(g_ZombieSkillProperty_Shock));
+		case ZombieSkillProperty_Rush: return LoadJson(filename, buffer, g_ZombieSkillProperty_Rush, sizeof(g_ZombieSkillProperty_Rush));
+		case ZombieSkillProperty_Pile: return LoadJson(filename, buffer, g_ZombieSkillProperty_Pile, sizeof(g_ZombieSkillProperty_Pile));
+		case ZombieSkillProperty_Bat: return LoadJson(filename, buffer, g_ZombieSkillProperty_Bat, sizeof(g_ZombieSkillProperty_Bat));
+		case ZombieSkillProperty_Stiffen: return LoadJson(filename, buffer, g_ZombieSkillProperty_Stiffen, sizeof(g_ZombieSkillProperty_Stiffen));
+		case ZombieSkillProperty_SelfDestruct: return LoadJson(filename, buffer, g_ZombieSkillProperty_SelfDestruct, sizeof(g_ZombieSkillProperty_SelfDestruct));
+		case ZombieSkillProperty_Penetration: return LoadJson(filename, buffer, g_ZombieSkillProperty_Penetration, sizeof(g_ZombieSkillProperty_Penetration));
+		case ZombieSkillProperty_Revival: return LoadJson(filename, buffer, g_ZombieSkillProperty_Revival, sizeof(g_ZombieSkillProperty_Revival));
+		case ZombieSkillProperty_Telleport: return LoadJson(filename, buffer, g_ZombieSkillProperty_Telleport, sizeof(g_ZombieSkillProperty_Telleport));
+		case ZombieSkillProperty_Boost: return LoadJson(filename, buffer, g_ZombieSkillProperty_Boost, sizeof(g_ZombieSkillProperty_Boost));
+		case ZombieSkillProperty_BombCreate: return LoadJson(filename, buffer, g_ZombieSkillProperty_BombCreate, sizeof(g_ZombieSkillProperty_BombCreate));
+		case ZombieSkillProperty_Flying: return LoadJson(filename, buffer, g_ZombieSkillProperty_Flying, sizeof(g_ZombieSkillProperty_Flying));
+		case ZombieSkillProperty_Fireball: return LoadJson(filename, buffer, g_ZombieSkillProperty_Fireball, sizeof(g_ZombieSkillProperty_Fireball));
+		case ZombieSkillProperty_DogShoot: return LoadJson(filename, buffer, g_ZombieSkillProperty_DogShoot, sizeof(g_ZombieSkillProperty_DogShoot));
+		case ZombieSkillProperty_ViolentRush: return LoadJson(filename, buffer, g_ZombieSkillProperty_ViolentRush, sizeof(g_ZombieSkillProperty_ViolentRush));
+		case ZombieSkillProperty_WebShooter: return LoadJson(filename, buffer, g_ZombieSkillProperty_WebShooter, sizeof(g_ZombieSkillProperty_WebShooter));
+		case ZombieSkillProperty_WebBomb: return LoadJson(filename, buffer, g_ZombieSkillProperty_WebBomb, sizeof(g_ZombieSkillProperty_WebBomb));
+		case ZombieSkillProperty_Protect: return LoadJson(filename, buffer, g_ZombieSkillProperty_Protect, sizeof(g_ZombieSkillProperty_Protect));
+		case ZombieSkillProperty_ChargeSlash: return LoadJson(filename, buffer, g_ZombieSkillProperty_ChargeSlash, sizeof(g_ZombieSkillProperty_ChargeSlash));
+		case ZombieSkillProperty_Claw: return LoadJson(filename, buffer, g_ZombieSkillProperty_Claw, sizeof(g_ZombieSkillProperty_Claw));
 		}
 	}
-	else
-	{
-		printf("[Hook_LoadJson] NOT in map - calling original function\n");
-	}
-	
-	printf("[Hook_LoadJson] Calling g_pfnLoadJson (original)...\n");
-	printf("[Hook_LoadJson] ptr: %p, filename: %s\n", ptr, filename->c_str());
-	
-	int result = g_pfnLoadJson(ptr, filename, buffer);
-	
-	printf("[Hook_LoadJson] Original function returned: %d\n", result);
-	printf("[Hook_LoadJson] EXIT\n");
-	printf("========================================\n\n");
-	
-	return result;
+
+	return g_pfnLoadJson(filename, buffer);
 }
 
 enum metaDataType
@@ -732,6 +671,12 @@ void* g_pPacketMetadataParse;
 
 CreateHookClass(int, Packet_Metadata_Parse, void* packetBuffer, int packetSize)
 {
+	unsigned char* pRaw = (unsigned char*)packetBuffer;
+	unsigned char ucID = pRaw[0];
+	unsigned char ucFlag = 0;
+	unsigned short usDataSize = 0;
+	unsigned char* pData = nullptr;
+
 	g_pPacketMetadataParse = ptr;
 
 	if (g_bIgnoreMetadata)
@@ -739,200 +684,268 @@ CreateHookClass(int, Packet_Metadata_Parse, void* packetBuffer, int packetSize)
 		return false;
 	}
 
-	unsigned char metaDataID = *(unsigned char*)packetBuffer;
+	unsigned char metaDataID = ucID;
 	printf("Received metadata ID %d\n", metaDataID);
 
 	metaDataType metaDataType = GetMetadataType(metaDataID);
 	const char* metaDataName = GetMetadataName(metaDataID);
 
+	if (metaDataType == zipMetadata)
+	{
+		ucFlag = pRaw[1];
+		usDataSize = *(unsigned short*)(pRaw + 2);
+		pData = pRaw + 4;
+		if (packetSize < 4 || packetSize < 4 + usDataSize)
+		{
+			printf("packet size mismatch ID=%d\n", ucID);
+			return g_pfnPacket_Metadata_Parse(ptr, packetBuffer, packetSize);
+		}
+	}
+	else
+	{
+		usDataSize = packetSize - 1;
+		pData = pRaw + 1;
+	}
+
+	printf("[METADATA] ID=%d, Flag=%d, Size=%u, GetMetadataTypeName:%s\n", ucID, ucFlag, usDataSize, metaDataName);
+
 	if (g_bDumpMetadata)
 	{
 		char name[MAX_PATH];
 		FILE* file = NULL;
-		unsigned short metaDataSize = 0;
-
 		CreateDirectory("MetadataDump", NULL);
 
 		switch (metaDataType)
 		{
 		case zipMetadata:
 		{
-			metaDataSize = *((unsigned short*)((char*)packetBuffer + 1));
+			char baseName[MAX_PATH];
+			if (metaDataName)
+				sprintf_s(baseName, "MetadataDump/Metadata_%s.zip", metaDataName);
+			else
+				sprintf_s(baseName, "MetadataDump/Metadata_Unk%d.zip", metaDataID);
 
-			sprintf_s(name, "MetadataDump/Metadata_%s.zip", metaDataName);
+			const char* mode = "wb";
+			if (metaDataID == 32)
+			{
+				if (ucFlag == 1)
+					mode = "wb";
+				else if (ucFlag == 4)
+					mode = "ab";
+				else
+					mode = "wb";
+			}
+			FILE* file = fopen(baseName, mode);
+			if (file)
+			{
+				fwrite(pData, 1, usDataSize, file);
+				fclose(file);
+				printf("Dumped ZIP metadata ID %d -> %s (flag=%d, size=%u)\n", metaDataID, baseName, ucFlag, usDataSize);
+			}
+			else
+			{
+				printf("Can't open '%s' file to write metadata dump\n", baseName);
+			}
+
+			if (metaDataID == 32)
+			{
+				char partName[MAX_PATH];
+				int partNum = 0;
+				if (ucFlag == 1)
+					partNum = 1;
+				else if (ucFlag == 4)
+					partNum = 2;
+
+				if (partNum > 0)
+				{
+					sprintf_s(partName, "%s.part%d", baseName, partNum);
+					FILE* partFile = fopen(partName, "wb");
+					if (partFile)
+					{
+						fwrite(pData, 1, usDataSize, partFile);
+						fclose(partFile);
+						printf("Dumped ZIP part %d -> %s\n", ucFlag, partName);
+					}
+					else
+					{
+						printf("Can't open '%s' file to write part dump\n", partName);
+					}
+				}
+			}
 			break;
 		}
 		case binToJsonMetadata:
 		{
-			sprintf_s(name, "MetadataDump/%s.json", metaDataName);
-			file = fopen(name, "wb");
-			if (!file)
+			if (metaDataID == 6) // WeaponPaints
 			{
-				printf("Can't open '%s' file to write metadata dump\n", name);
+				sprintf_s(name, "MetadataDump/WeaponPaints.json");
+				file = fopen(name, "wb");
+				if (!file)
+				{
+					printf("Can't open '%s' file to write metadata dump\n", name);
+					break;
+				}
+
+				fwrite("{\n\t\"Version\": 1,\n", 17, 1, file);
+
+				int offset = 0;
+				int size = *((unsigned short*)(pData + offset)); offset += 2;
+
+				for (int i = 0; i < size; i++)
+				{
+					int weaponID = *((unsigned short*)(pData + offset)); offset += 2;
+					int size2 = *((unsigned short*)(pData + offset)); offset += 2;
+
+					char buf[64];
+					int len = sprintf_s(buf, "\t\"%d\": {\n\t\t\"Paints\": [\n", weaponID);
+					fwrite(buf, len, 1, file);
+
+					for (int j = 0; j < size2; j++)
+					{
+						int paintID = *((unsigned short*)(pData + offset)); offset += 2;
+						len = sprintf_s(buf, "\t\t\t%d", paintID);
+						fwrite(buf, len, 1, file);
+						if (size2 - 1 != j) fwrite(",", 1, 1, file);
+						fwrite("\n", 1, 1, file);
+					}
+
+					fwrite("\t\t]\n\t}", 6, 1, file);
+					if (size - 1 != i) fwrite(",", 1, 1, file);
+					fwrite("\n", 1, 1, file);
+				}
+
+				fwrite("}", 1, 1, file);
+				fclose(file);
+				printf("Dumped WeaponPaints.json ID %d\n", metaDataID);
+			}
+			else if (metaDataID == 15) // ZombieWarWeaponList
+			{
+				sprintf_s(name, "MetadataDump/ZombieWarWeaponList.json");
+				file = fopen(name, "wb");
+				if (!file)
+				{
+					printf("Can't open '%s' file to write metadata dump\n", name);
+					break;
+				}
+
+				fwrite("{\n\t\"Version\": 1,\n\t\"Weapons\": [\n", 31, 1, file);
+
+				int offset = 0;
+				int size = *((unsigned short*)(pData + offset)); offset += 2;
+
+				for (int i = 0; i < size; i++)
+				{
+					int itemID = *((unsigned long*)(pData + offset)); offset += 4;
+					char buf[32];
+					int len = sprintf_s(buf, "\t\t%d", itemID);
+					fwrite(buf, len, 1, file);
+					if (size - 1 != i) fwrite(",", 1, 1, file);
+					fwrite("\n", 1, 1, file);
+				}
+
+				fwrite("\t]\n}", 4, 1, file);
+				fclose(file);
+				printf("Dumped ZombieWarWeaponList.json ID %d\n", metaDataID);
+			}
+			else if (metaDataID == 16) // RandomWeaponList
+			{
+				sprintf_s(name, "MetadataDump/RandomWeaponList.json");
+				file = fopen(name, "wb");
+				if (!file)
+				{
+					printf("Can't open '%s' file to write metadata dump\n", name);
+					break;
+				}
+
+				fwrite("{\n\t\"Version\": 1,\n", 17, 1, file);
+
+				int offset = 0;
+				int size = *((unsigned long*)(pData + offset)); offset += 4;
+
+				for (int i = 0; i < size; i++)
+				{
+					int itemID = *((unsigned long*)(pData + offset)); offset += 4;
+					int size2 = *((unsigned long*)(pData + offset)); offset += 4;
+
+					char buf[64];
+					int len = sprintf_s(buf, "\t\"%d\": {\n", itemID);
+					fwrite(buf, len, 1, file);
+
+					for (int j = 0; j < size2; j++)
+					{
+						int modeFlag = *((unsigned char*)(pData + offset)); offset++;
+						int dropRate = *((unsigned long*)(pData + offset)); offset += 4;
+						int enhanceProbability = *((unsigned long*)(pData + offset)); offset += 4;
+
+						len = sprintf_s(buf, "\t\t\"%d\": {\n", modeFlag);
+						fwrite(buf, len, 1, file);
+						len = sprintf_s(buf, "\t\t\t\"DropRate\": %d,\n", dropRate);
+						fwrite(buf, len, 1, file);
+						len = sprintf_s(buf, "\t\t\t\"EnhanceProbability\": %d\n", enhanceProbability);
+						fwrite(buf, len, 1, file);
+						fwrite("\t\t}", 3, 1, file);
+						if (size2 - 1 != j) fwrite(",", 1, 1, file);
+						fwrite("\n", 1, 1, file);
+					}
+
+					fwrite("\t}", 2, 1, file);
+					if (size - 1 != i) fwrite(",", 1, 1, file);
+					fwrite("\n", 1, 1, file);
+				}
+
+				fwrite("}", 1, 1, file);
+				fclose(file);
+				printf("Dumped RandomWeaponList.json ID %d\n", metaDataID);
 			}
 			else
 			{
-				switch (metaDataID)
+				if (metaDataName)
+					sprintf_s(name, "MetadataDump/Metadata_%s.bin", metaDataName);
+				else
+					sprintf_s(name, "MetadataDump/Metadata_Unk%d.bin", metaDataID);
+
+				file = fopen(name, "wb");
+				if (file)
 				{
-				case 6:
+					fwrite(pData, 1, usDataSize, file);
+					fclose(file);
+					printf("Dumped BIN metadata ID %d -> %s\n", metaDataID, name);
+				}
+				else
 				{
-					fwrite("{\n\t\"Version\": 1,\n", 17, 1, file);
-
-					int offset = 1;
-					int size = *((unsigned short*)((char*)packetBuffer + offset)); offset += 2;
-
-					for (int i = 0; i < size; i++)
-					{
-						int weaponID = *((unsigned short*)((char*)packetBuffer + offset)); offset += 2;
-						int size2 = *((unsigned short*)((char*)packetBuffer + offset)); offset += 2;
-
-						char weaponIDStr[32];
-						int weaponIDSize = sprintf_s(weaponIDStr, "\t\"%d\": {\n\t\t\"Paints\": [\n", weaponID);
-						fwrite(weaponIDStr, weaponIDSize, 1, file);
-
-						for (int j = 0; j < size2; j++)
-						{
-							int paintID = *((unsigned short*)((char*)packetBuffer + offset)); offset += 2;
-
-							char paintIDStr[16];
-							int paintIDSize = sprintf_s(paintIDStr, "\t\t\t%d", paintID);
-							fwrite(paintIDStr, paintIDSize, 1, file);
-
-							if (size2 - 1 != j)
-								fwrite(",", 1, 1, file);
-
-							fwrite("\n", 1, 1, file);
-						}
-
-						fwrite("\t\t]\n\t}", 6, 1, file);
-
-						if (size - 1 != i)
-							fwrite(",", 1, 1, file);
-
-						fwrite("\n", 1, 1, file);
-					}
-
-					fwrite("}", 1, 1, file);
-					break;
+					printf("Can't open '%s' file to write metadata dump\n", name);
 				}
-				case 15:
-				{
-					fwrite("{\n\t\"Version\": 1,\n\t\"Weapons\": [\n", 31, 1, file);
-
-					int offset = 1;
-					int size = *((unsigned short*)((char*)packetBuffer + offset)); offset += 2;
-
-					for (int i = 0; i < size; i++)
-					{
-						int itemID = *((unsigned long*)((char*)packetBuffer + offset)); offset += 4;
-
-						char itemIDStr[16];
-						int itemIDSize = sprintf_s(itemIDStr, "\t\t%d", itemID);
-						fwrite(itemIDStr, itemIDSize, 1, file);
-
-						if (size - 1 != i)
-							fwrite(",", 1, 1, file);
-
-						fwrite("\n", 1, 1, file);
-					}
-
-					fwrite("\t]\n}", 4, 1, file);
-					break;
-				}
-				case 16:
-				{
-					fwrite("{\n\t\"Version\": 1,\n", 17, 1, file);
-
-					int offset = 1;
-					int size = *((unsigned long*)((char*)packetBuffer + offset)); offset += 4;
-
-					for (int i = 0; i < size; i++)
-					{
-						int itemID = *((unsigned long*)((char*)packetBuffer + offset)); offset += 4;
-						int size2 = *((unsigned long*)((char*)packetBuffer + offset)); offset += 4;
-
-						char itemIDStr[16];
-						int itemIDSize = sprintf_s(itemIDStr, "\t\"%d\": {\n", itemID);
-						fwrite(itemIDStr, itemIDSize, 1, file);
-
-						for (int j = 0; j < size2; j++)
-						{
-							int modeFlag = *((unsigned char*)((char*)packetBuffer + offset)); offset++;
-							int dropRate = *((unsigned long*)((char*)packetBuffer + offset)); offset += 4;
-							int enhanceProbability = *((unsigned long*)((char*)packetBuffer + offset)); offset += 4;
-
-							char modeFlagStr[16];
-							int modeFlagSize = sprintf_s(modeFlagStr, "\t\t\"%d\": {\n", modeFlag);
-							fwrite(modeFlagStr, modeFlagSize, 1, file);
-
-							char dropRateStr[32];
-							int dropRateSize = sprintf_s(dropRateStr, "\t\t\t\"DropRate\": %d,\n", dropRate);
-							fwrite(dropRateStr, dropRateSize, 1, file);
-
-							char enhanceProbabilityStr[32];
-							int enhanceProbabilitySize = sprintf_s(enhanceProbabilityStr, "\t\t\t\"EnhanceProbability\": %d\n", enhanceProbability);
-							fwrite(enhanceProbabilityStr, enhanceProbabilitySize, 1, file);
-
-							fwrite("\t\t}", 3, 1, file);
-
-							if (size2 - 1 != j)
-								fwrite(",", 1, 1, file);
-
-							fwrite("\n", 1, 1, file);
-						}
-
-						fwrite("\t}", 2, 1, file);
-
-						if (size - 1 != i)
-							fwrite(",", 1, 1, file);
-
-						fwrite("\n", 1, 1, file);
-					}
-
-					fwrite("}", 1, 1, file);
-					break;
-				}
-				}
-				fclose(file);
 			}
 			break;
 		}
 		case binMetadata:
+		default:
 		{
 			if (metaDataName)
 				sprintf_s(name, "MetadataDump/Metadata_%s.bin", metaDataName);
 			else
 				sprintf_s(name, "MetadataDump/Metadata_Unk%d.bin", metaDataID);
-			break;
-		}
-		}
 
-		if (metaDataType != binToJsonMetadata)
-		{
 			file = fopen(name, "wb");
-			if (!file)
+			if (file)
 			{
-				printf("Can't open '%s' file to write metadata dump\n", name);
+				//fwrite(pData, 1, usDataSize, file);
+				fwrite(pRaw, 1, packetSize, file);
+				fclose(file);
+				printf("Dumped BIN metadata ID %d -> %s\n", metaDataID, name);
 			}
 			else
 			{
-				if (metaDataType == zipMetadata)
-				{
-					fwrite(((unsigned short*)((char*)packetBuffer + 3)), *((unsigned short*)((char*)packetBuffer + 1)), 1, file);
-				}
-				else
-				{
-					fwrite(packetBuffer, packetSize, 1, file);
-				}
-				fclose(file);
+				printf("Can't open '%s' file to write metadata dump\n", name);
 			}
+			break;
+		}
 		}
 	}
 
 	if (g_bWriteMetadata && metaDataType == zipMetadata)
 	{
 		HZIP hMetaData = CreateZip(0, MAX_ZIP_SIZE, ZIP_MEMORY);
-
 		if (!hMetaData)
 		{
 			printf("CreateZip returned NULL.\n");
@@ -940,18 +953,20 @@ CreateHookClass(int, Packet_Metadata_Parse, void* packetBuffer, int packetSize)
 		}
 
 		char path[MAX_PATH];
-		sprintf(path, "Metadata/%s", metaDataName);
+		sprintf_s(path, "Metadata/%s", metaDataName ? metaDataName : "Unknown");
 		printf("Writing metadata from %s\n", path);
 
-		if (ZipAdd(hMetaData, metaDataName, path, 0, ZIP_FILENAME))
+		if (ZipAdd(hMetaData, metaDataName ? metaDataName : "Unknown", path, 0, ZIP_FILENAME))
 		{
 			printf("ZipAdd returned error.\n");
+			CloseZip(hMetaData);
 			return g_pfnPacket_Metadata_Parse(ptr, packetBuffer, packetSize);
 		}
 
 		void* buffer;
 		unsigned long length = 0;
 		ZipGetMemory(hMetaData, &buffer, &length);
+		CloseZip(hMetaData);
 
 		if (length == 0)
 		{
@@ -960,14 +975,11 @@ CreateHookClass(int, Packet_Metadata_Parse, void* packetBuffer, int packetSize)
 		}
 
 		std::vector<unsigned char> destBuffer;
-		std::vector<unsigned char> metaDataBuffer((char*)buffer, (char*)buffer + length);
-
 		destBuffer.push_back(metaDataID);
+		destBuffer.push_back(0x00);
 		destBuffer.push_back((unsigned char)(length & 0xFF));
 		destBuffer.push_back((unsigned char)(length >> 8));
-		destBuffer.insert(destBuffer.end(), metaDataBuffer.begin(), metaDataBuffer.end());
-
-		CloseZip(hMetaData);
+		destBuffer.insert(destBuffer.end(), (unsigned char*)buffer, (unsigned char*)buffer + length);
 
 		return g_pfnPacket_Metadata_Parse(ptr, static_cast<void*>(destBuffer.data()), destBuffer.size());
 	}
@@ -1012,34 +1024,6 @@ void DumpPacket(const char* packetName, void* packetBuffer, int packetSize)
 	{
 		printf("Can't open '%s' file to write %s dump\n", name, packetName);
 	}
-}
-
-CreateHookClass(int, Packet_Login_Parse, void* packetBuffer, int packetSize)
-{
-	printf("\n========================================\n");
-	printf("[Packet_Login_Parse] CALLED - Size: %d\n", packetSize);
-	printf("========================================\n");
-	
-	if (g_bDumpLogin)
-	{
-		DumpPacket("LoginDump", packetBuffer, packetSize);
-	}
-	
-	// Dump first 64 bytes for analysis
-	printf("[Packet_Login_Parse] First 64 bytes:\n");
-	unsigned char* buf = (unsigned char*)packetBuffer;
-	for (int i = 0; i < min(64, packetSize); i++)
-	{
-		printf("%02X ", buf[i]);
-		if ((i + 1) % 16 == 0) printf("\n");
-	}
-	printf("\n========================================\n\n");
-	
-	int result = g_pfnPacket_Login_Parse(ptr, packetBuffer, packetSize);
-	
-	printf("[Packet_Login_Parse] Original handler returned: %d\n", result);
-	
-	return result;
 }
 
 CreateHookClass(int, Packet_Quest_Parse, void* packetBuffer, int packetSize)
@@ -1252,21 +1236,7 @@ CreateHookClass(int, ReadPacket, char* outBuf, int len, unsigned short* outLen, 
 	// this + 0x34 - read buf
 
 	// 0 - got message, 4 - wrong header, 6 - idk, 7 - got less than 4 bytes, 8 - bad sequence
-	if (!initialMsg)
-	{
-		if (result == 0 && outLen && *outLen > 0)
-		{
-			printf("[ReadPacket] Got packet - ID: %d, Size: %d\n", (unsigned char)outBuf[0], *outLen);
-		}
-		else
-		{
-			static int failCount = 0;
-			if (++failCount % 500 == 0)
-				printf("[ReadPacket] Still waiting... (%d attempts, last result: %d)\n", failCount, result);
-		}
-	}
-
-	if (g_bDumpAll && !initialMsg && result == 0 && outLen && *outLen > 0)
+	if (!initialMsg && result == 0)
 	{
 		// create folder
 		CreateDirectory("Packets", NULL);
@@ -1311,41 +1281,19 @@ CreateHookClass(int, ReadPacket, char* outBuf, int len, unsigned short* outLen, 
 	return result;
 }
 
-void __declspec(naked) Hook_LogToErrorLog()
+CreateHook(__cdecl, void, LogToErrorLog, char* pLogFile, int logFileId, char* fmt, int fmtLen, ...)
 {
-	static char outputString[1024];
-	static char* fmt;
-	static int logLevel;
-	
-	__asm {
-		push ebp
-		push esi
-		push edi
-		
-		mov eax, [esp + 0x18]
-		mov fmt, eax
-		
-		mov eax, [esp + 0x14]
-		mov logLevel, eax
-	}
-	
-	{
-		va_list va;
-		char* argStart = (char*)&fmt + sizeof(char*) + sizeof(int);
-		va = (va_list)argStart;
-		
-		_vsnprintf_s(outputString, sizeof(outputString), fmt, va);
-		outputString[1023] = 0;
-	}
-	
-	printf("[LogToErrorLog][Level:%d] %s\n", logLevel, outputString);
-	
-	__asm {
-		pop edi
-		pop esi
-		pop ebp
-		jmp [g_pfnLogToErrorLog]
-	}
+	char outputString[1024];
+
+	va_list va;
+	va_start(va, fmtLen);
+	_vsnprintf(outputString, sizeof(outputString), fmt, va);
+	outputString[sizeof(outputString) - 1] = 0;
+	va_end(va);
+
+	printf("[LogToErrorLog][%s.log] %s\n", pLogFile, outputString);
+
+	g_pfnLogToErrorLog(pLogFile, logFileId, outputString, fmtLen);
 }
 
 CreateHook(WINAPI, void, OutputDebugStringA, LPCSTR lpOutString)
@@ -1523,7 +1471,6 @@ void Init(HMODULE hEngineModule, HMODULE hFileSystemModule)
 	g_bWriteMetadata = CommandLine()->CheckParm("-writemetadata");
 	g_bLoadDediCsvFromFile = CommandLine()->CheckParm("-loaddedicsvfromfile");
 	g_bNoNGHook = CommandLine()->CheckParm("-nonghook");
-	g_bDumpLogin = CommandLine()->CheckParm("-dumplogin");
 
 	printf("g_pServerIP = %s, g_pServerPort = %s\n", g_pServerIP, g_pServerPort);
 }
@@ -1632,9 +1579,9 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 				MessageBox(NULL, "ZombieSkillProperty_Patch == NULL!!!", "Error", MB_OK);
 			else
 			{
-				patchAddr = pushStr - 0x23;
-				BYTE patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
-				WriteMemory((void*)patchAddr, (BYTE*)patch, sizeof(patch));
+				//patchAddr = pushStr - 0x23;
+				//BYTE patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
+				//WriteMemory((void*)patchAddr, (BYTE*)patch, sizeof(patch));
 			}
 
 			// NOP dedi check on Fire Bomb
@@ -1738,20 +1685,14 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 			InlineHook((void*)find, Hook_Packet_Crypt_Parse, (void*&)g_pfnPacket_Crypt_Parse);
 	}
 
-	
-	// Hook login packet (ID 67) to diagnose login flow issues
-	find = FindPattern(PACKET_LOGIN_PARSE_SIG_CSNZ, PACKET_LOGIN_PARSE_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-	if (!find)
-		MessageBox(NULL, "Packet_Login_Parse == NULL!!!", "Error", MB_OK);
-	else
-		InlineHook((void*)find, Hook_Packet_Login_Parse, (void*&)g_pfnPacket_Login_Parse);
-
-	// Always hook ReadPacket for diagnostics - file dumping is gated by g_bDumpAll inside the hook
-	find = FindPattern(READPACKET_SIG_CSNZ, READPACKET_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
-	if (!find)
-		MessageBox(NULL, "ReadPacket == NULL!!!", "Error", MB_OK);
-	else
-		InlineHookFromCallOpcode((void*)find, Hook_ReadPacket, (void*&)g_pfnReadPacket, dummy);
+	if (g_bDumpAll)
+	{
+		find = FindPattern(READPACKET_SIG_CSNZ, READPACKET_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, NULL);
+		if (!find)
+			MessageBox(NULL, "ReadPacket == NULL!!!", "Error", MB_OK);
+		else
+			InlineHookFromCallOpcode((void*)find, Hook_ReadPacket, (void*&)g_pfnReadPacket, dummy);
+	}
 
 	// patch launcher name in hw.dll to fix annoying message box (length of launcher filename must be < original name)
 	find = FindPattern("cstrike-online.exe", strlen("cstrike-online.exe"), g_dwEngineBase, g_dwEngineBase + g_dwEngineSize);
@@ -1761,14 +1702,37 @@ void Hook(HMODULE hEngineModule, HMODULE hFileSystemModule)
 		WriteMemory((void*)find, (BYTE*)"CSOLauncher.exe", strlen("CSOLauncher.exe") + 1);
 
 	// patch 100 fps limit
-	find = FindPush(g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, "%3i fps -- host(%3.0f) sv(%3.0f) cl(%3.0f) gfx(%3.0f) snd(%3.0f) ents(%d)\n", 2);
+	//find = FindPush(g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, "%3i fps -- host(%3.0f) sv(%3.0f) cl(%3.0f) gfx(%3.0f) snd(%3.0f) ents(%d)\n", 2);
+	//if (!find)
+	//	MessageBox(NULL, "100Fps_Patch == NULL!!!", "Error", MB_OK);
+	//else
+	//{
+	//	DWORD patchAddr = find - 0x4DA;
+	//	BYTE patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
+	//	WriteMemory((void*)patchAddr, (BYTE*)patch, sizeof(patch));
+	//}
+
+	find = FindPattern(FPS_LIMIT_SIG_CSNZ, FPS_LIMIT_MASK_CSNZ, g_dwEngineBase, g_dwEngineBase + g_dwEngineSize, 0);
 	if (!find)
+	{
 		MessageBox(NULL, "100Fps_Patch == NULL!!!", "Error", MB_OK);
+	}
 	else
 	{
-		DWORD patchAddr = find - 0x4DA;
-		BYTE patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
-		WriteMemory((void*)patchAddr, (BYTE*)patch, sizeof(patch));
+		DWORD jbeAddr = FindPattern("\x66\x0F\x2F\xC2\x76\x0A", "xxxxxx", find, find + 0x200, 4);
+
+		if (jbeAddr)
+		{
+			BYTE patch[] = { 0xEB };
+			WriteMemory((void*)jbeAddr, patch, sizeof(patch));
+			// char buf[64];
+			// sprintf(buf, "Debug at: 0x%X", jbeAddr);
+			// MessageBox(NULL, buf, "Success", MB_OK);
+		}
+		else
+		{
+			MessageBox(NULL, "Failed to find JBE jump in FPS function!", "Error", MB_OK);
+		}
 	}
 
 	if (!g_bUseOriginalServer && !g_bUseSSL)
